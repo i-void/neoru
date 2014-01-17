@@ -1,4 +1,5 @@
 require 'pp'
+require 'rack'
 
 module Neo
 	class << self
