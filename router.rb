@@ -63,6 +63,7 @@ module Neo
 			end
 
 			def is_action?(module_name, controller_name, part)
+				part.gsub!('-','_')
 				return false if not is_controller?(module_name, controller_name) or part.blank?
 				part += '_action'
 				require_controller module_name, controller_name
@@ -161,6 +162,7 @@ module Neo
 					response = other_route_conditions(uri_parts)
 					return response unless response.blank?
 				end
+				return nil
 			end
 
 			def response

@@ -6,7 +6,8 @@ Neo.use 'database:exception'
 module Neo
 	module Database
 		class Query
-			attr_accessor :select,:match,:command,:match,:label,:return,:parameters,:create,:set,:param_uid,:limit,:where,:where_depth
+			attr_accessor :select,:match,:command,:match,:label,:return,:parameters,:create,:set,:param_uid,:limit
+			attr_accessor :order,:where,:where_depth
 			def initialize(command='')
 				if Neo::Config.main[:db][:host].blank?
 					@uri = 'localhost'
@@ -20,6 +21,7 @@ module Neo
 				@create = []
 				@where = []
 				@set = []
+				@order = []
 				@where_depth = 0
 				@param_uid = 0
 				@parameters = {:query=>''}
@@ -51,6 +53,18 @@ module Neo
 						end
 					}
 				end
+			end
+
+			def add_order(node_sign, sort_type=1)
+				if node_sign.kind_of?(Array)
+					node_sign.each {|sign| add_order(sign)}
+				end
+				if node_sign.kind_of?(String)
+					node_sign = 'n.'+node_sign unless node_sign.include?('.')
+					types = {1=>'ASC',-1=>'DESC'}
+					@order << node_sign+' '+types[sort_type]
+				end
+				return self
 			end
 
 			def add_match(node_sign,labels='',properties='',suffix='')
@@ -194,6 +208,9 @@ module Neo
 				end
 				unless @limit.blank?
 					@parameters[:query] += 'LIMIT '+@limit.to_s+' '
+				end
+				unless @order.blank?
+					@parameters[:query] += 'ORDER BY '+@order.join(',')+' '
 				end
 				return @parameters['query']
 			end
