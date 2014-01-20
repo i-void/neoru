@@ -18,7 +18,7 @@ module Neo
 		end
 
 		def render(params)
-			@renderer = Haml::Engine.new(File.read(@path))
+			@renderer = Haml::Engine.new(File.read(@path,encoding: 'UTF-8'))
 			return @renderer.render(Object.new, params)
 		end
 	end

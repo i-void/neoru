@@ -8,12 +8,18 @@ module Neo
 			else
 				view_html =  Neo::View.new.render(params)
 				params[:content] = view_html
-				return Neo::View.new(@layout).render(params)
+				content = Neo::View.new(@layout).render(params)
+				return Neo::Response.html(content)
 			end
 		end
 
+		def redirect(url)
+			return Neo::Response.redirect(url)
+		end
+
 		def render_view(view,params)
-			return Neo::View.new(view).render(params)
+			content = Neo::View.new(view).render(params)
+			return Neo::Response.html(content)
 		end
 	end
 end

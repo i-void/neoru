@@ -1,9 +1,10 @@
 require 'pp'
 require 'rack'
 
+
 module Neo
 	class << self
-		attr_accessor :env, :app_dir, :dir, :server_vars, :req
+		attr_accessor :app_dir, :dir, :server_vars, :req
 
 		def init
 			Dir[Neo.dir+'/helpers/*'].each { |f| require f }
@@ -12,7 +13,7 @@ module Neo
 			Neo.use 'controller'
 			Neo.use 'database:model'
 			Neo.use 'response'
-			@req = Rack::Request.new(env)
+			@req = Rack::Request.new(Neo.server_vars)
 			Neo::Router.build_module_data
 		end
 

@@ -10,7 +10,7 @@ module Neo
 			attr_accessor :order,:where,:where_depth
 			def initialize(command='')
 				if Neo::Config.main[:db][:host].blank?
-					@uri = 'localhost'
+					@uri = '127.0.0.1'
 				else
 					@uri = Neo::Config.main[:db][:host]
 				end

@@ -2,18 +2,6 @@ require 'mime/types'
 Neo.use 'params'
 Neo.use 'controller'
 module Neo
-	class FileStreamer
-		def initialize(path)
-			@file = File.open(path)
-		end
-
-		def each(&blk)
-			@file.each(&blk)
-		ensure
-			@file.close
-		end
-	end
-
 	class Router
 		class << self
 			attr_accessor :modules, :default_module, :default_controller, :params
@@ -47,11 +35,10 @@ module Neo
 				action_name += '_action'
 				require_controller module_name, controller_name
 				begin
-					content = Kernel
+					return Kernel
 						.const_get(module_name.camelize).const_get('Controllers').const_get(controller_name.camelize)
 					.new.send(action_name, *@params)
 				end
-				[200, {'Content-Type' => 'text/html'}, [content]]
 			end
 
 			def is_module?(part)
@@ -118,7 +105,7 @@ module Neo
 					route_reg, param_reg, action, method = data
 					param_reg = '/'+param_reg if param_reg[0]!='/'
 					url_reg = route_reg + param_reg
-					uri = Neo.server_vars['REQUEST_URI']
+					uri = Neo.server_vars['REQUEST_PATH']
 					request_method = Neo.server_vars['REQUEST_METHOD'].downcase
 					if /^#{url_reg}/.match(uri) && method.split(',').include?(request_method)
 						param_string = uri.gsub /^#{route_reg}/, ''
@@ -137,16 +124,12 @@ module Neo
 			#match route with modules hash
 			def find_action
 				#if static file
-				file = Neo.app_dir+'/web'+Neo.server_vars['REQUEST_URI']
+				file = Neo.app_dir+'/web'+Neo.server_vars['REQUEST_PATH']
 				if File.file?(file)
-					mime = MIME::Types.type_for(file).first.to_s
-					if mime == 'application/x-ruby'
-						return Neo::Response.error404
-					end
-					return ['200', {'Content-Type' => MIME::Types.type_for(file).first.to_s}, FileStreamer.new(file)]
+					return Neo::Response.static(file)
 				end
 
-				uri_parts = Neo.server_vars['REQUEST_URI'].split('/')[1..-1]
+				uri_parts = Neo.server_vars['REQUEST_PATH'].split('/')[1..-1]
 
 				@default_module = Neo::Config.main[:default_module] unless Neo::Config.main[:default_module].blank?
 				@default_controller = @default_module
