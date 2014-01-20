@@ -14,12 +14,17 @@ module Neo
 
 			def find_one
 				set_limit(1)
-				return find
+				return find[0]
 			end
 
 			def find
 				set_return('n')
 				return fill_model(@model)
+			end
+
+			def filter_by_id(id)
+				self.add_where([['id','=', "'#{id}'"]])
+				return self
 			end
 		end
 	end

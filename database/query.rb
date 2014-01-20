@@ -27,6 +27,55 @@ module Neo
 				@parameters = {:query=>''}
 			end
 
+			def get
+				result = run
+				modified_result = []
+				if result['data'].blank?
+					return nil
+				else
+					if result['data'].length == 1
+						row = result['data'][0]
+						if row.length == 1
+							if row[0].kind_of?(String) or row[0].kind_of?(Fixnum)
+								return row[0]
+							else
+								return row[0]['data']
+							end
+						else
+							row.each do |cell|
+								if defined?(cell['data']).nil?
+									modified_result << cell
+								else
+									modified_result << cell['data']
+								end
+							end
+							return modified_result
+						end
+					else
+						result['data'].each do |row|
+							if row.length ==1
+								if defined?(row[0]['data']).nil?
+									modified_result << row[0]
+								else
+									modified_result << row[0]['data']
+								end
+							else
+								modified_row = []
+								row.each do |cell|
+									if defined?(cell['data']).nil?
+										modified_row << cell
+									else
+										modified_row << cell['data']
+									end
+								end
+								modified_result << modified_row
+							end
+						end
+						return modified_result
+					end
+				end
+			end
+
 			def run
 				build
 
@@ -159,7 +208,6 @@ module Neo
 					prefix = '( '
 				end
 				params.each do |param,op,val|
-					val = "'#{val}'" unless val =~ /\A[+-]?\d+\Z/
 					@where << prefix+'n.'+param.to_s+op+val+' '+operator
 					prefix = ''
 				end
