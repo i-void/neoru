@@ -27,6 +27,29 @@ module Neo
 				@parameters = {:query=>''}
 			end
 
+
+			def get_all
+				result = run
+				modified_result = []
+				if result['data'].blank?
+					return nil
+				else
+					result['data'].each do |row|
+						modified_row = []
+						row.each do |cell|
+							if cell.kind_of?(String) or cell.kind_of?(Fixnum)
+								modified_row << cell
+							else
+								return nil if cell.nil?
+								modified_row << cell['data']
+							end
+						end
+						modified_result << modified_row
+					end
+					return modified_result
+				end
+			end
+
 			def get
 				result = run
 				modified_result = []
@@ -39,14 +62,19 @@ module Neo
 							if row[0].kind_of?(String) or row[0].kind_of?(Fixnum)
 								return row[0]
 							else
+								return nil if row[0].nil?
 								return row[0]['data']
 							end
 						else
 							row.each do |cell|
-								if defined?(cell['data']).nil?
+								if cell.kind_of?(String) or cell.kind_of?(Fixnum)
 									modified_result << cell
 								else
-									modified_result << cell['data']
+									if cell.nil?
+										modified_result << nil
+									else
+										modified_result << cell['data']
+									end
 								end
 							end
 							return modified_result
@@ -54,18 +82,26 @@ module Neo
 					else
 						result['data'].each do |row|
 							if row.length ==1
-								if defined?(row[0]['data']).nil?
+								if row[0].kind_of?(String) or row[0].kind_of?(Fixnum)
 									modified_result << row[0]
 								else
-									modified_result << row[0]['data']
+									if row[0].nil?
+										modified_result << nil
+									else
+										modified_result << row[0]['data']
+									end
 								end
 							else
 								modified_row = []
 								row.each do |cell|
-									if defined?(cell['data']).nil?
+									if cell.kind_of?(String) or cell.kind_of?(Fixnum)
 										modified_row << cell
 									else
-										modified_row << cell['data']
+										if cell.nil?
+											modified_row << nil
+										else
+											modified_row << cell['data']
+										end
 									end
 								end
 								modified_result << modified_row
