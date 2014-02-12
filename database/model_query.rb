@@ -14,7 +14,9 @@ module Neo
 
 			def find_one
 				set_limit(1)
-				return find[0]
+				found = find
+				return found[0] if found.length > 0
+				return nil
 			end
 
 			def find

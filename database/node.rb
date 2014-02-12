@@ -29,6 +29,17 @@ module Neo
 				increase_id(id) if result['data'].length>0
 			end
 
+			def update
+				properties = {}
+				@properties.each do |prop|
+					properties[prop.to_s.gsub('@','')] = @model.instance_variable_get(prop) unless prop=='@labels'.to_sym
+				end
+				cypher = Cypher.new
+				cypher.add_update(@id,'n',@labels,properties)
+				cypher.set_return('n')
+				cypher.run
+			end
+
 			def relate_to(node,relation_name,relation_props={})
 				cypher = Cypher.new.add_match('n',@labels,{:id=>@id}).add_match('m',node.labels,{:id=>node.id})
 				rel_params = ''
@@ -48,6 +59,9 @@ module Neo
 					insert(id)
 					@id = id
 					return id
+				else
+					update
+					return @id
 				end
 			end
 

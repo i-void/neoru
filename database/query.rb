@@ -7,7 +7,7 @@ module Neo
 	module Database
 		class Query
 			attr_accessor :select,:match,:command,:match,:label,:return,:parameters,:create,:set,:param_uid,:limit
-			attr_accessor :order,:where,:where_depth
+			attr_accessor :order,:where,:where_depth,:update
 			def initialize(command='')
 				if Neo::Config.main[:db][:host].blank?
 					@uri = '127.0.0.1'
@@ -15,6 +15,7 @@ module Neo
 					@uri = Neo::Config.main[:db][:host]
 				end
 				@uri +=  ':' + Neo::Config.main[:db][:port].to_s
+				@update = []
 				@command = command
 				@label = []
 				@match = []
@@ -209,6 +210,19 @@ module Neo
 				return self
 			end
 
+			def add_update(id,node_sign,labels='',properties='',suffix='')
+				self.add_match(node_sign,labels,{:id=>id})
+				prop_str = ''
+				if properties.length > 0
+					param_label = "properties#{@param_uid}"
+					prop_str = ' {'+param_label+'}'
+					add_parameters({param_label.to_sym=>properties})
+					@param_uid+=1
+				end
+				@update << ' '+node_sign + ' = ' + prop_str+' '+suffix
+				return self
+			end
+
 			def add_label(label)
 				@label << label
 				return self
@@ -244,7 +258,7 @@ module Neo
 					prefix = '( '
 				end
 				params.each do |param,op,val|
-					@where << prefix+'n.'+param.to_s+op+val+' '+operator
+					@where << prefix+'n.'+param.to_s+' '+op+' '+val+' '+operator
 					prefix = ''
 				end
 				@where_depth = depth
@@ -281,6 +295,9 @@ module Neo
 					end
 					@parameters[:query]+=' '
 				end
+				unless @update.blank?
+					@parameters[:query] += 'SET '+@update.join(',')+' '
+				end
 				unless @create.blank?
 					@parameters[:query] += 'CREATE '+@create.join+' '
 				end
@@ -290,11 +307,11 @@ module Neo
 				unless @return.blank?
 					@parameters[:query] += 'RETURN '+@return+' '
 				end
-				unless @limit.blank?
-					@parameters[:query] += 'LIMIT '+@limit.to_s+' '
-				end
 				unless @order.blank?
 					@parameters[:query] += 'ORDER BY '+@order.join(',')+' '
+				end
+				unless @limit.blank?
+					@parameters[:query] += 'LIMIT '+@limit.to_s+' '
 				end
 				return @parameters['query']
 			end
