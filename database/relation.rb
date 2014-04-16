@@ -1,7 +1,2 @@
-module Neo
-	module Database
-		class Relation
-
-		end
-	end
+class Neo::Database::Relation
 end

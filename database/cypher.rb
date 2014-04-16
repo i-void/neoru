@@ -1,10 +1,5 @@
-Neo.use 'database:query'
-module Neo
-	module Database
-		class Cypher < Query
-			def initialize
-				super('db/data/cypher')
-			end
-		end
-	end
+class Neo::Database::Cypher < Neo::Database::Query
+  def initialize
+    super('db/data/cypher')
+  end
 end

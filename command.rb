@@ -1,4 +1,2 @@
-module Neo
-	class Command
-	end
+class Neo::Command
 end
