@@ -37,14 +37,14 @@ class Module
           eval('module ::'+full_name+' end')
         end
       else
-        # its not a file nor folder, so it can be a "module of app" or "App module" or "Neo module"
-        if e == :Neo or e == :App or File.directory?(module_dir + '/' + e.to_s.underscore)
-          # if one of these instantiate it to top level and return
-          eval('module ::'+e.to_s+' end')
+        # try to find the constant from end to beggining of the path
+        path_parts = self.name.split('::')
+        if path_parts.length > 1
+          return const_get('::' + self.name.split('::')[0..-2].join('::') + '::' + e.to_s)
+        elsif path_parts.length == 1
           return const_get('::' + e.to_s)
         else
-          # nothing we can do
-          old_const_missing(e)
+          return old_const_missing(e)
         end
       end
 
