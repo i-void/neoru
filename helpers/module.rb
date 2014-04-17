@@ -11,7 +11,15 @@ class Module
 
     # trying to add top level
     if self.name == 'Object'
-      eval('module '+full_name+' end')
+      file_path = module_dir + full_name.underscore
+      # if it has a main class named as folder we must init that file
+      main_class_file = file_path+'/'+e.to_s.underscore+'.rb'
+      if File.file?(main_class_file)
+        require main_class_file
+      else
+        # it is a folder so we can instantiate it as a new module
+        self.const_set(e, Module.new)
+      end
     else
       if self.name.start_with? 'Neo'
         # trying to add to Neo module
@@ -33,16 +41,23 @@ class Module
           # it is a file so we can require it
           require file_path
         else
-          # it is a folder so we can instantiate it as a new module
-          eval('module ::'+full_name+' end')
+          # if it has a main class named as folder we must init that file
+          main_class_file = file_path+'/'+e.to_s.underscore+'.rb'
+          if File.file?(main_class_file)
+            require main_class_file
+          else
+            # it is a folder so we can instantiate it as a new module
+            self.const_set(e, Module.new)
+          end
         end
       else
         # try to find the constant from end to beggining of the path
         path_parts = self.name.split('::')
         if path_parts.length > 1
-          return const_get('::' + self.name.split('::')[0..-2].join('::') + '::' + e.to_s)
+          path_parts = path_parts[0..-2] << e.to_s
+          return path_parts.reduce(Object) {|memo,part| memo.const_get part }
         elsif path_parts.length == 1
-          return const_get('::' + e.to_s)
+          return Object.const_get(e.to_s)
         else
           return old_const_missing(e)
         end

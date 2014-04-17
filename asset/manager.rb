@@ -89,26 +89,30 @@ class Neo::Asset::Manager
     def copy_assets
       file_paths = Dir[@module_dir + '/**/*']
 
-      # find the last modified time from files
-      mtime = File.mtime(file_paths.max_by { |path| File.file?(path) ? File.mtime(path).to_i : 0 }).to_i.to_s(32)
+      p file_paths
 
-      @media_dir += '/' + Neo::Params.module + '/' + @last_version
+      unless file_paths.blank?
+        # find the last modified time from files
+        mtime = File.mtime(file_paths.max_by { |path| File.file?(path) ? File.mtime(path).to_i : 0 }).to_i.to_s(32)
 
-      if mtime != @last_version
-        if @last_version.blank?
-          @last_version = mtime
-          @media_dir += @last_version
-        end
+        @media_dir += '/' + Neo::Params.module + '/' + @last_version
 
-        file_paths.each do |file_path|
-          if File.file? file_path
-            file_path.gsub! @module_dir, ''
-            file = Neo::Asset::File.new(file_path)
-            file.copy
+        if mtime != @last_version
+          if @last_version.blank?
+            @last_version = mtime
+            @media_dir += @last_version
           end
+
+          file_paths.each do |file_path|
+            if File.file? file_path
+              file_path.gsub! @module_dir, ''
+              file = Neo::Asset::File.new(file_path)
+              file.copy
+            end
+          end
+          File.rename(@media_dir, @media_dir.gsub(@last_version, mtime))
+          File.write(@version_file, mtime)
         end
-        File.rename(@media_dir, @media_dir.gsub(@last_version, mtime))
-        File.write(@version_file, mtime)
       end
     end
 
