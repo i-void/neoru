@@ -89,8 +89,6 @@ class Neo::Asset::Manager
     def copy_assets
       file_paths = Dir[@module_dir + '/**/*']
 
-      p file_paths
-
       unless file_paths.blank?
         # find the last modified time from files
         mtime = File.mtime(file_paths.max_by { |path| File.file?(path) ? File.mtime(path).to_i : 0 }).to_i.to_s(32)

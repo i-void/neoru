@@ -1,13 +1,14 @@
-class Neo::Form::Submit
+class Neo::Form::Submit < Neo::Form::Input
   attr_accessor :value
-  def initialize(name,label=nil,value='',attr={}, label_attr={})
-    super(name,label,attr,label_attr)
-    @value = value
+
+  def initialize(opts)
+    @opts = opts
+    super(@opts[:name],@opts[:label],@opts[:attr],@opts[:label_attr])
   end
 
   def to_tag
-    tag = '<input type="text" name="'+@name+'" id="'+@name+'" '
-    tag += 'value="'+@value+'" ' unless @value.blank?
-    tag + get_attr_string + '/>'
+    tag = '<input type="submit" name="'+@opts[:name]+'" id="'+@opts[:name]+'" '
+    tag += 'value="'+@opts[:value]+'" ' unless @opts[:value].blank?
+    tag + get_attr_string.to_s + '/>'
   end
 end

@@ -17,8 +17,6 @@ class Neo::Commands::DumpAssets < Neo::Command
       .hexdigest(asset[:action] + Neo::Asset::Manager.last_version)[-10..-1]
       .to_i(16).to_s(36)
 
-    puts Neo::Asset::Manager.media_dir
-
     output_file_name = Neo::Asset::Manager.media_dir + '/' + output_file_name
 
     links = links.group_by{|link| File.extname(link).gsub('.','').to_sym}

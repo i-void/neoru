@@ -18,7 +18,7 @@ class Neo::Form::Datetime < Neo::Form::Input
     </div>
 
     <script type="text/javascript">
-      $(function () {
+      window.onload = function(){
         $("#'+@opts[:name]+'").datetimepicker({
           language: "tr",
           format: "dd MM yyyy - hh:ii",
@@ -26,7 +26,7 @@ class Neo::Form::Datetime < Neo::Form::Input
           todayBtn: true,
           pickerPosition: "bottom-left"
         });
-      });
+      };
     </script>'
   end
 end

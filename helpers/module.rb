@@ -7,6 +7,7 @@ class Module
   def const_missing(e)
 
     full_name = self.name+'::'+e.to_s
+    puts full_name
     module_dir = Neo.app_dir + '/modules/'
 
     # trying to add top level

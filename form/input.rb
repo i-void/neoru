@@ -12,8 +12,10 @@ class Neo::Form::Input
   def get_attr_string
     attrs = ''
     @attr.each do |k,v|
+      k = k.to_s
       attrs += v.blank? ? k+' ' : k+'="'+v+'" '
     end unless @attr.nil?
+    return attrs
   end
 
 end

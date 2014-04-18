@@ -1,4 +1,4 @@
-class Neo::Form::Form
+class Neo::Form
   attr_accessor :data
   # create form class from data
   def initialize(data)
