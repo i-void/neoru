@@ -5,7 +5,6 @@ class Neo::View
   end
 
   def to_real_path(path=nil)
-    puts merhaba
     if path.nil?
       return "#{Neo.app_dir}/modules/#{Neo::Params.module.underscore}/views/#{Neo::Params.controller.underscore}/#{Neo::Params.action}.haml"
     else
