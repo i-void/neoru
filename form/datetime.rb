@@ -1,9 +1,8 @@
 class Neo::Form::Datetime < Neo::Form::Input
   attr_accessor :opts
+
   def initialize(opts)
-    #name,label=nil,value='',attr={}, label_attr={}
-    @opts = opts
-    super(@opts[:name],@opts[:label],@opts[:attr],@opts[:label_attr])
+    super(opts)
   end
 
   def to_tag

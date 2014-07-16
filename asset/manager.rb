@@ -2,7 +2,7 @@ require 'fileutils'
 
 class Neo::Asset::Manager
   class << self
-    attr_accessor :media_dir, :module_dir, :last_version, :parsers, :css, :js
+    attr_accessor :media_dir, :module_dir, :last_version, :parsers, :css, :js, :changed_files
 
     # set the paths
     def init
@@ -10,12 +10,14 @@ class Neo::Asset::Manager
       @parsers = {
         dev:{
           coffee: ['coffee'],
-          scss: ['scss']
+          scss: ['scss'],
+          sass: ['sass']
         },
         prod:{
         }
       }
 
+      @changed_files = []
       @media_dir = Neo.app_dir + '/web/' + @media_dir_name
       @module_dir = Neo.app_dir + '/modules/' + Neo::Params.module + '/assets'
       @version_file = @media_dir + '/.version'
@@ -30,6 +32,7 @@ class Neo::Asset::Manager
     def to_html(links)
       code = {js:'',css:''}
       root_dir = @media_dir.gsub Neo.app_dir+'/web', ''
+      links.uniq!
       links.each do |link|
         if File.extname(link) == '.css'
           code[:css] += "<link rel=\"stylesheet\" href=\"#{root_dir+link}\" type=\"text/css\" charset=\"utf-8\" />\n"
@@ -97,7 +100,6 @@ class Neo::Asset::Manager
 
         if mtime != @last_version
           if @last_version.blank?
-            @last_version = mtime
             @media_dir += @last_version
           end
 
@@ -108,9 +110,18 @@ class Neo::Asset::Manager
               file.copy
             end
           end
-          File.rename(@media_dir, @media_dir.gsub(@last_version, mtime))
-          File.write(@version_file, mtime)
+
+
+          new_dir = @media_dir.gsub(@last_version, mtime)
+          dirs = Dir["#{Neo.app_dir}/web/#{@media_dir_name}/*/*"]
+          dirs.each do |dir|
+            modified_dir = "#{dir.split('/')[0..-2].join('/')}/#{mtime}"
+            FileUtils.move(dir, modified_dir) if dir != modified_dir
+          end
+          @media_dir = new_dir
         end
+
+        File.write(@version_file, mtime)
       end
     end
 

@@ -31,6 +31,11 @@ class Neo::Commands::DumpAssets < Neo::Command
   def run
     Neo::Params.env = 'dev'
 
+    media_dir_name = 'media'
+    media_dir = Neo.app_dir + '/web/' + media_dir_name
+    files = Dir[media_dir + '/*/*/*.min.js', media_dir + '/*/*/*.min.css']
+    files.each {|file| File.delete file}
+
     conf = Neo::Config.main
     conf[:assets].each do |asset|
       process_asset(asset)

@@ -11,6 +11,7 @@ class Neo::Asset::File
   # @modified: dosya güncellenmiş mi?
   #
   def initialize(path)
+    @path = path
     @org_path = Neo::Asset::Manager.module_dir + path
     @type = File.extname(@org_path)[1..-1]
     @virt_path = Neo::Asset::Manager.media_dir + path
@@ -44,8 +45,44 @@ class Neo::Asset::File
     end
   end
 
+  # gets the imported files for scss and sass
+  def get_imports
+    imports = []
+    File.open(@org_path,encoding:'UTF-8').each_line do |line|
+      matches = line.scan /@import( +("|')?|("|'))([^'" ]+)(("|')? *|("|')).*/
+      if matches[0] and matches[0][3]
+        imports << matches[0][3]
+      end
+    end
+    imports
+  end
+
+  # in scss and sass files it checks the change of imported files
+  def imported_changed?
+    if %w( .scss .sass ).include? File.extname(@org_path)
+      get_imports.reduce(false) do |memo, import|
+        imported_file = "#{File.dirname @path}/_#{import}#{File.extname(@org_path)}"
+        if File.file? "#{Neo::Asset::Manager.module_dir}/#{imported_file}"
+          file = Neo::Asset::File.new(imported_file)
+          file.copy
+          file.is_changed? ? true : memo
+        else
+          memo
+        end
+      end
+    else
+      false
+    end
+  end
+
   def is_changed?
-    File.mtime(@org_path) > File.mtime(@virt_path)
+    if Neo::Asset::Manager.changed_files.include? @path
+      true
+    else
+      changed = (imported_changed? or File.mtime(@org_path) > File.mtime(@virt_path))
+      Neo::Asset::Manager.changed_files << @path if changed
+      changed
+    end
   end
 
   def fill_content

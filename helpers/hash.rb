@@ -1,5 +1,9 @@
 class Hash
-  def blank?
-    true if defined?(self).nil? or self.nil? or self.empty?
+  def key
+    keys[0]
+  end
+
+  def value
+    values[0]
   end
 end

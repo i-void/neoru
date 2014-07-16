@@ -21,26 +21,8 @@ module Neo
       root_dir + file
     end
 
-		def use(file)
-			class_parts = []
-			file.split(':').each do |part|
-				class_parts << part.camelize
-			end
-			class_name = 'Neo::' + class_parts.join('::')
-			file.gsub! ':', '/'
-			require Neo.dir+'/'+file
-			return eval(class_name)
-		end
-
-		def use_module(file)
-			class_parts = []
-			file.split(':').each do |part|
-				class_parts << part.camelize
-			end
-			class_name = '::' + class_parts.join('::')
-			file.gsub! ':', '/'
-			require Neo.app_dir+'/modules/'+file
-			return eval(class_name)
-		end
+    def trn(phrase)
+      return Neo::I18N::translate(phrase)
+    end
 	end
 end

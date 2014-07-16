@@ -11,11 +11,11 @@ class String
         downcase
   end
 
-  def blank?
-    true if defined?(self).nil? or self.nil? or self.empty?
-  end
-
   def to_class
     split('::').inject(Object) {|o,c| o.const_get c}
+  end
+
+  def default(definition)
+    blank? ? definition : self
   end
 end

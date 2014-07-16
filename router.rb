@@ -40,14 +40,17 @@ class Neo::Router
     end
 
     def is_module?(part)
+      part.gsub!('-','_')
       not @modules[part].blank?
     end
 
     def is_controller?(module_name, part)
+      module_name.gsub!('-','_')
       true if is_module?(module_name) and @modules[module_name].include?(part+'.rb')
     end
 
     def is_action?(module_name, controller_name, part)
+      module_name.gsub!('-','_')
       part.gsub!('-','_')
       return false if not is_controller?(module_name, controller_name) or part.blank?
       part += '_action'
@@ -123,7 +126,7 @@ class Neo::Router
     def find_action
       #if static file
       file = Neo.app_dir+'/web'+Neo.server_vars['REQUEST_PATH']
-      if File.file?(file)
+      if File.file?(file) and not %w( .ru .rb .scss .sass .coffee ).include? File.extname(file)
         return Neo::Response.static(file)
       end
 
@@ -143,7 +146,7 @@ class Neo::Router
         response = other_route_conditions(uri_parts)
         return response unless response.blank?
       end
-      return nil
+      nil
     end
 
     def response

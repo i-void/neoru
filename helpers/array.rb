@@ -1,5 +1,7 @@
 class Array
-  def blank?
-    true if defined?(self).nil? or self.nil? or self.empty?
+  def each_hash
+    each do |hash|
+      yield hash.key, hash.value
+    end
   end
 end

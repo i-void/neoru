@@ -1,6 +1,6 @@
 require 'sass'
 
-class Neo::Asset::Parsers::Scss
+class Neo::Asset::Parsers::Sass
 
   @options = {
     :style => :nested,
@@ -9,13 +9,13 @@ class Neo::Asset::Parsers::Scss
       /usr/local/share/gems/gems/compass-0.12.6/frameworks/compass/stylesheets/ ],
     :cache => true,
     :cache_location => './.sass-cache',
-    :syntax => :scss,
+    :syntax => :sass,
     :filesystem_importer => Sass::Importers::Filesystem
   }.freeze
 
   class << self
     def parse(file)
-      if File.basename(file, '.scss').start_with?('_')
+      if File.basename(file, '.sass').start_with?('_')
         return false
       end
       engine = Sass::Engine.for_file(file, @options)

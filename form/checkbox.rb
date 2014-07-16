@@ -1,8 +1,8 @@
 class Neo::Form::Checkbox < Neo::Form::Input
   attr_accessor :checked
-  def initialize(name,label=nil,checked=false,attr={})
-    super(name,label,attr)
-    @checked = checked
+
+  def initialize(opts)
+    super(opts)
   end
 
   def to_tag

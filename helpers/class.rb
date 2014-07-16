@@ -1,5 +1,5 @@
 class Class
-	def blank?
-		true if defined?(self).nil? or self.nil? or self.empty?
-	end
+  def default(definition)
+    blank? ? definition : self
+  end
 end
