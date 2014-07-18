@@ -12,7 +12,7 @@ module Neo
       Neo::Event.register(:before_action) {Neo::Asset::Manager.init}
 		end
 
-		def response
+		def http_response
 			Neo::Router.response
 		end
 

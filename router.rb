@@ -55,6 +55,7 @@ class Neo::Router
       return false if not is_controller?(module_name, controller_name) or part.blank?
       part += '_action'
       require_controller module_name, controller_name
+      module_name.camelize+'::Controllers::'+controller_name.camelize+'.new'
       eval(module_name.camelize+'::Controllers::'+controller_name.camelize+'.new').respond_to?(part)
     end
 
