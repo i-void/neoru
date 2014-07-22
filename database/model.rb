@@ -1,5 +1,6 @@
 class Neo::Database::Model
   attr_accessor :id
+
   def labels=(labels)
     @labels = labels
   end

@@ -105,7 +105,7 @@ class Neo::Router
       Neo::Config.main[:routes].each_value do |data|
         data[3]='get' if data[3].blank?
         route_reg, param_reg, action, method = data
-        param_reg = '/'+param_reg if param_reg[0]!='/'
+        param_reg = '/'+param_reg if param_reg[0]!='/' and !param_reg.blank?
         url_reg = route_reg + param_reg
         uri = Neo.server_vars['REQUEST_PATH']
         request_method = Neo.server_vars['REQUEST_METHOD'].downcase
