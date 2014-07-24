@@ -1,4 +1,5 @@
 require 'mime/types'
+
 class Neo::Router
   class << self
     attr_accessor :modules, :default_module, :default_controller, :params
@@ -46,17 +47,20 @@ class Neo::Router
 
     def is_controller?(module_name, part)
       module_name.gsub!('-','_')
-      true if is_module?(module_name) and @modules[module_name].include?(part+'.rb')
+      is_module?(module_name) and @modules[module_name].include?(part+'.rb')
     end
 
     def is_action?(module_name, controller_name, part)
       module_name.gsub!('-','_')
       part.gsub!('-','_')
-      return false if not is_controller?(module_name, controller_name) or part.blank?
-      part += '_action'
-      require_controller module_name, controller_name
-      module_name.camelize+'::Controllers::'+controller_name.camelize+'.new'
-      eval(module_name.camelize+'::Controllers::'+controller_name.camelize+'.new').respond_to?(part)
+      if is_controller?(module_name, controller_name) or part.blank?
+        part += '_action'
+        require_controller module_name, controller_name
+        module_name.camelize+'::Controllers::'+controller_name.camelize+'.new'
+        eval(module_name.camelize+'::Controllers::'+controller_name.camelize+'.new').respond_to?(part)
+      else
+        false
+      end
     end
 
     def init_params(uri_parts, param_start)
@@ -68,54 +72,50 @@ class Neo::Router
         if is_controller? uri_parts[0], uri_parts[1]
           if is_action? uri_parts[0], uri_parts[1], uri_parts[2]
             init_params uri_parts, 3
-            return action_call uri_parts[0], uri_parts[1], uri_parts[2]
-          end
-          if is_action? uri_parts[0], uri_parts[1], 'index'
+            action_call uri_parts[0], uri_parts[1], uri_parts[2]
+          elsif is_action? uri_parts[0], uri_parts[1], 'index'
             init_params uri_parts, 2
-            return action_call uri_parts[0], uri_parts[1]
+            action_call uri_parts[0], uri_parts[1]
           end
-        end
-        if is_action? uri_parts[0], uri_parts[0], uri_parts[1]
+        elsif is_action? uri_parts[0], uri_parts[0], uri_parts[1]
           init_params uri_parts, 2
-          return action_call uri_parts[0], uri_parts[0], uri_parts[1]
+          action_call uri_parts[0], uri_parts[0], uri_parts[1]
+        else
+          init_params uri_parts, 1
+          action_call(uri_parts[0])
         end
-        init_params uri_parts, 1
-        return action_call(uri_parts[0])
-      end
-
-      if is_controller? @default_module, uri_parts[0]
+      elsif is_controller? @default_module, uri_parts[0]
         if is_action? @default_module, uri_parts[0], uri_parts[1]
           init_params uri_parts, 2
-          return action_call @default_module, uri_parts[0], uri_parts[1]
+          action_call @default_module, uri_parts[0], uri_parts[1]
+        else
+          init_params uri_parts, 1
+          action_call(@default_module, uri_parts[0])
         end
+      elsif is_action? @default_module, @default_controller, uri_parts[0]
         init_params uri_parts, 1
-        return action_call(@default_module, uri_parts[0])
+        action_call(@default_module, @default_controller, uri_parts[0])
+      else
+        init_params uri_parts, 0
+        action_call(@default_module, @default_controller, 'index')
       end
-
-      if is_action? @default_module, @default_controller, uri_parts[0]
-        init_params uri_parts, 1
-        return action_call(@default_module, @default_controller, uri_parts[0])
-      end
-
-      init_params uri_parts, 0
-      return action_call(@default_module, @default_controller, 'index')
     end
 
     def check_from_config
-      Neo::Config.main[:routes].each_value do |data|
+      Neo::Config.main[:routes].reduce(nil) do |ret, (name, data)|
         data[3]='get' if data[3].blank?
         route_reg, param_reg, action, method = data
-        param_reg = '/'+param_reg if param_reg[0]!='/' and !param_reg.blank?
+        param_reg = '/'+param_reg if param_reg[0]!='/'
         url_reg = route_reg + param_reg
         uri = Neo.server_vars['REQUEST_PATH']
+        uri += '/' if uri[-1] != '/'
         request_method = Neo.server_vars['REQUEST_METHOD'].downcase
         if /^#{url_reg}/.match(uri) && method.split(',').include?(request_method)
           param_string = uri.gsub /^#{route_reg}/, ''
           @params = param_string.split('/')[1..-1]
-          return action
+          break action
         end
       end
-      return nil
     end
 
     def action_call_config(action)
@@ -128,26 +128,32 @@ class Neo::Router
       #if static file
       file = Neo.app_dir+'/web'+Neo.server_vars['REQUEST_PATH']
       if File.file?(file) and not %w( .ru .rb .scss .sass .coffee ).include? File.extname(file)
-        return Neo::Response.static(file)
-      end
-
-      uri_parts = Neo.server_vars['REQUEST_PATH'].split('/')[1..-1]
-
-      @default_module = Neo::Config.main[:default_module] unless Neo::Config.main[:default_module].blank?
-      @default_controller = @default_module
-
-      #if the route matches with one of the config param then call action from config
-      action = check_from_config
-      return action_call_config(action) unless action.nil?
-
-      #if the uri is '/' then go and run default module's same named controller's index action
-      if uri_parts.blank?
-        return action_call @default_module
+        Neo::Response.static(file)
       else
-        response = other_route_conditions(uri_parts)
-        return response unless response.blank?
+        uri_parts = Neo.server_vars['REQUEST_PATH'].split('/')[1..-1]
+
+        @default_module = Neo::Config.main[:default_module] unless Neo::Config.main[:default_module].blank?
+        @default_controller = @default_module
+
+        #if the route matches with one of the config param then call action from config
+        action = check_from_config
+        if action.nil?
+          #if the uri is '/' then go and run default module's same named controller's index action
+          if uri_parts.blank?
+            action_call @default_module
+          else
+            response = other_route_conditions(uri_parts)
+            if response.blank?
+              Neo::Response.html('')
+            else
+              response.blank?
+            end
+            response unless response.blank?
+          end
+        else
+          action_call_config(action)
+        end
       end
-      nil
     end
 
     def response
