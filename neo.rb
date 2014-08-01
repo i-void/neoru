@@ -23,7 +23,7 @@ module Neo
     end
 
     def trn(phrase)
-      return Neo::I18N::translate(phrase)
+      Neo::I18N::translate(phrase)
     end
 	end
 end

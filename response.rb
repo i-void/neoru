@@ -21,12 +21,13 @@ module Neo
       def static(file)
         mime = MIME::Types.type_for(file).first.to_s
         if mime == 'application/x-ruby'
-          return error404
+          error404
+        else
+          file = File.open(file, 'rb')
+          contents = file.read
+          file.close
+          ['200', {'Content-Type' => mime}, [contents]]
         end
-        file = File.open(file, 'rb')
-        contents = file.read
-        file.close
-        ['200', {'Content-Type' => mime}, [contents]]
       end
 
       #returns simple html format
