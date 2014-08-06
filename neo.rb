@@ -27,5 +27,7 @@ module Neo
     def trn(phrase)
       Neo::I18N::translate(phrase)
     end
+
+
 	end
 end

@@ -1,11 +1,15 @@
 class Neo::Database::Model
   attr_accessor :id
+  attr_reader :_excluded_instance_variables
 
+  def exclude(*vars)
+    @_excluded_instance_variables = vars
+  end
   def labels=(labels)
     @labels = labels
   end
   def labels
-    return @labels
+    @labels
   end
   def save
     node = Node.new.fill_from_model(self)
@@ -27,7 +31,7 @@ class Neo::Database::Model
           new_model.send(k+'=',v)
         end
       end
-      return new_model
+      new_model
     end
   end
 end

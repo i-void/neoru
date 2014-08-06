@@ -1,4 +1,4 @@
-class Neo::I18N::TrTr
+class Neo::I18N::EnEn
   @dict = [
     ['Dosya Ekle', 'Add File']
   ]

@@ -7,11 +7,13 @@ class Neo::Database::Node
 
   def fill_from_model(model)
     @properties = model.instance_variables
+    @excluded = model._excluded_instance_variables
+    @properties = @properties.find {|i| not @excluded.include? i.to_s[1..-1].to_sym}
     @model = model
     @id = model.id
     labels = model.labels.kind_of?(Array)?(model.labels):[model.labels]
     @labels += labels
-    return self
+    self
   end
 
   def insert(id)

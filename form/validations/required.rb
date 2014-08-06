@@ -7,7 +7,7 @@ class Neo::Form::Validations::Required
   end
 
   def get_tag_attributes
-    return {
+     {
       'data-rule-required' => 'true',
       'data-msg-required' => @opts[:message]
     }
