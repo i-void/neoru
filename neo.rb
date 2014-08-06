@@ -8,7 +8,9 @@ module Neo
 		def init
 			Dir[Neo.dir+'/helpers/*'].each { |f| require f }
 			@req = Rack::Request.new(Neo.server_vars)
-      @req.session[:id]
+       # pp @req
+      @req.session[:id] unless @req.env.nil?
+
 			Neo::Router.build_module_data
       Neo::Event.register(:before_action) {Neo::Asset::Manager.init}
 		end

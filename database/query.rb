@@ -176,16 +176,18 @@ module Neo
         result = run
         model_arr = []
         methods = model.new.methods
-        result['data'].each do |row|
-          new_model = model.new
-          row[0]['data'].each do |k,v|
-            if methods.include?((k+'=').to_sym)
-              new_model.send(k+'=',v)
+        unless result.nil?
+          result['data'].each do |row|
+            new_model = model.new
+            row[0]['data'].each do |k,v|
+              if methods.include?((k+'=').to_sym)
+                new_model.send(k+'=',v)
+              end
             end
+            model_arr << new_model
           end
-          model_arr << new_model
         end
-        return model_arr
+        model_arr
       end
 
       def add_create(node_sign,labels='',properties='',suffix='')

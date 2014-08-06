@@ -12,17 +12,21 @@ class Neo::Database::ModelQuery < Neo::Database::Cypher
   def find_one
     set_limit(1)
     found = find
-    return found[0] if found.length > 0
-    return nil
+    found[0] if found.length > 0
   end
 
   def find
     set_return('n')
-    return fill_model(@model)
+    fill_model(@model)
   end
 
   def filter_by_id(id)
     self.add_where([['id','=', "'#{id}'"]])
-    return self
+    self
+  end
+
+  def count
+    set_return 'COUNT(n)'
+    self.get
   end
 end
