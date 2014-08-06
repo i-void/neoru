@@ -31,7 +31,7 @@ class Neo::Fixture
   def load(sort_col=nil,case_insentive=true, sorter='tr_sorter')
     parse_data
     @data.each do |model, value|
-      obj = eval(model)
+      obj = model.to_obj
       value.each do |params|
         obj_instance = obj.new
         params.each do |key,param|

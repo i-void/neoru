@@ -40,6 +40,7 @@ class Module
       if File.exist?(file_path) or File.exist?(file_path + '.rb')
         if File.file?(file_path + '.rb')
           # it is a file so we can require it
+
           require file_path
         else
           # if it has a main class named as folder we must init that file
