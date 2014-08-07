@@ -21,17 +21,20 @@ class Neo::Database::Model
     self_node.relate_to(node,relation_name,props)
   end
 
+  def fill_model(data)
+    data.each do |k,v|
+      if self.respond_to? k+'='
+        self.send(k+'=',v)
+      end
+    end
+    self
+  end
+
   class << self
     #@param data Hash :hash data which will fill the model ex;{id:3}
     def fill_model(data)
       new_model = self.new
-      methods = new_model.methods
-      data.each do |k,v|
-        if methods.include?((k+'=').to_sym)
-          new_model.send(k+'=',v)
-        end
-      end
-      new_model
+      new_model.fill_model(data)
     end
   end
 end

@@ -1,5 +1,5 @@
 class NilClass
 	def length
-		return 0
+		0
   end
 end

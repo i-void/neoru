@@ -29,4 +29,9 @@ class Neo::Database::ModelQuery < Neo::Database::Cypher
     set_return 'COUNT(n)'
     self.get
   end
+
+  def get_raw
+    set_return 'n'
+    self.get
+  end
 end
