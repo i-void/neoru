@@ -3,7 +3,7 @@ require 'rack'
 
 module Neo
 	class << self
-		attr_accessor :app_dir, :dir, :server_vars, :req
+		attr_accessor :app_dir, :dir, :server_vars, :req, :mail
 
 		def init
 			Dir[Neo.dir+'/helpers/*'].each { |f| require f }
@@ -13,6 +13,7 @@ module Neo
 
 			Neo::Router.build_module_data
       Neo::Event.register(:before_action) {Neo::Asset::Manager.init}
+      @mail = Neo::Mail.new
 		end
 
 		def http_response

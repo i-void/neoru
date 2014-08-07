@@ -22,9 +22,11 @@ class Neo::Database::Model
   end
 
   def fill_model(data)
-    data.each do |k,v|
-      if self.respond_to? k+'='
-        self.send(k+'=',v)
+    unless data.nil?
+      data.each do |k,v|
+        if self.respond_to? k+'='
+          self.send(k+'=',v)
+        end
       end
     end
     self
