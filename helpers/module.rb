@@ -7,7 +7,7 @@ class Module
   def const_missing(e)
 
     full_name = self.name+'::'+e.to_s
-    puts full_name
+    puts(full_name) if Neo.conf and Neo.conf[:env] == 'dev'
     module_dir = Neo.app_dir + '/modules/'
 
     # trying to add top level

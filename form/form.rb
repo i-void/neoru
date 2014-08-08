@@ -36,6 +36,7 @@ class Neo::Form
       form_data = Neo.req.POST.select {|k| k.start_with? "#{@data[:name]}_"}
       bare_name = input[:name].gsub(/^#{@data[:name]}_/, '')
       input_inst = self.send bare_name
+      input_inst.form = self
       result = input_inst.valid? form_data
       @errors[bare_name] = input_inst.errors unless result
       (not result) ? result : memo
@@ -52,7 +53,7 @@ class Neo::Form
   # @return [Neo::Database::Model]
   def fill_model(model)
     form_data = Neo.req.POST.select {|k| k.start_with? "#{@data[:name]}_"}
-    form_data.hmap! {|k,v| {k.gsub(/^#{@data[:name]}_/, '') => v} }
+    form_data.hmap! {|k,v| [k.gsub(/^#{@data[:name]}_/, ''), v] }
     model.fill_model form_data
   end
 

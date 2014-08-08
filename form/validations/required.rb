@@ -1,10 +1,6 @@
-require 'hash_deep_merge'
-
-class Neo::Form::Validations::Required
-  attr_accessor :error
-
+class Neo::Form::Validations::Required < Neo::Form::Validations::Base
   def initialize(opts)
-    defaults = {message:'Bu alanı boş bırakmayınız'}
+    defaults = {message: Neo.trn('Don\'t leave this field blank')}
     @opts = defaults.deep_merge opts
     @error = @opts[:message]
   end

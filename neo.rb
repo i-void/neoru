@@ -1,9 +1,10 @@
 require 'pp'
 require 'rack'
+require 'hash_deep_merge'
 
 module Neo
 	class << self
-		attr_accessor :app_dir, :dir, :server_vars, :req, :mail
+		attr_accessor :app_dir, :dir, :server_vars, :req, :mail, :conf
 
 		def init
 			Dir[Neo.dir+'/helpers/*'].each { |f| require f }
@@ -14,6 +15,7 @@ module Neo
 			Neo::Router.build_module_data
       Neo::Event.register(:before_action) {Neo::Asset::Manager.init}
       @mail = Neo::Mail.new
+      @conf = Neo::Config.main
 		end
 
 		def http_response
@@ -25,9 +27,11 @@ module Neo
       root_dir + file
     end
 
-    def trn(phrase)
-      Neo::I18N::translate(phrase)
+    def trn(phrase, lang=Neo::Config.main[:lang])
+      Neo::I18N::translate(phrase,lang)
     end
+
+
 
 
 	end

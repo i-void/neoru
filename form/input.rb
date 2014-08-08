@@ -1,7 +1,7 @@
 require 'hash_deep_merge'
 
 class Neo::Form::Input
-  attr_accessor :name,:errors,:label,:attr,:opts
+  attr_accessor :name,:errors,:label,:attr,:opts,:form
   attr_reader :validations
 
   def initialize(opts)
@@ -29,6 +29,7 @@ class Neo::Form::Input
     else
       @validations.reduce(true) do |memo, (rule,params)|
         validator = Neo::Form::Validations.const_get(rule.to_s.camelize).new(params)
+        validator.form = @form
         result = validator.check form_data, @name
         @errors << validator.error unless result
         (not result) ? result : memo

@@ -6,7 +6,7 @@ class Neo::Form::Upload < Neo::Form::Input
   end
 
   def to_tag
-    @opts[:label] = Neo::trn 'Dosya Ekle' if @opts[:label].nil?
+    @opts[:label] = Neo::trn 'Add File' if @opts[:label].nil?
     @attr = {class:''}.deep_merge @attr
     (@attr[:class] += ' btn upload-btn').strip!
 

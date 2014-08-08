@@ -8,13 +8,7 @@ class Hash
   end
 
   def hmap!(&block)
-    self.keys.each do |key|
-      hash = block.call(key, self[key])
-
-      self[hash.keys.first] = hash[hash.keys.first]
-      self.delete(key)
-    end
-    self
+    replace hmap(&block)
   end
 
   def hmap(&block)

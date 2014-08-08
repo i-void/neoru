@@ -113,9 +113,9 @@ module Neo
         build
 
         if @parameters['params'].nil?
-          pp @parameters[:query]
+          pp @parameters[:query] if Neo.conf and Neo.conf[:env] == 'dev'
         else
-          pp @parameters[:query] + ' --> ' +@parameters['params'].to_s
+          pp @parameters[:query] + ' --> ' +@parameters['params'].to_s if Neo.conf and Neo.conf[:env] == 'dev'
         end
 
         begin
