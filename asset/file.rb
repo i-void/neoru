@@ -28,7 +28,7 @@ class Neo::Asset::File
       else
         initial_path = @org_path
         parsers.each do |parser|
-          content = Neo::Asset::Parsers.const_get(parser.camelize).parse(initial_path)
+          content = ::Neo::Asset::Parsers.const_get(parser.camelize).parse(initial_path)
           if content
             if content[:extension].nil?
               File.write(@virt_path, content[:content])

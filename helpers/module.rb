@@ -68,4 +68,16 @@ class Module
     end
     const_get(e.to_s)
   end
+
+  def make_static
+    self.instance_variables.each do |i|
+      i = i.to_s[1..-1]
+      self.define_singleton_method(i.to_sym) do
+        self.instance_variable_get "@#{i}".to_sym
+      end
+      self.define_singleton_method("#{i}=".to_sym) do |j|
+        self.instance_variable_set "@#{i}".to_sym, j
+      end
+    end
+  end
 end
