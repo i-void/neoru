@@ -10,7 +10,7 @@ class Neo::Asset::Parsers::Scss
     :cache => true,
     :cache_location => './.sass-cache',
     :syntax => :scss,
-    :filesystem_importer => Sass::Importers::Filesystem
+    :filesystem_importer => ::Sass::Importers::Filesystem
   }.freeze
 
   class << self
@@ -18,7 +18,7 @@ class Neo::Asset::Parsers::Scss
       if File.basename(file, '.scss').start_with?('_')
         return false
       end
-      engine = Sass::Engine.for_file(file, @options)
+      engine = ::Sass::Engine.for_file(file, @options)
       {content: engine.render, extension: '.css'}
     end
   end

@@ -3,6 +3,7 @@
 require 'uglifier'
 require 'pp'
 require 'digest/md5'
+require 'sass'
 
 class Neo::Commands::DumpAssets < Neo::Command
 
@@ -20,6 +21,8 @@ class Neo::Commands::DumpAssets < Neo::Command
     output_file_name = Neo::Asset::Manager.media_dir + '/' + output_file_name
 
     links = links.group_by{|link| File.extname(link).gsub('.','').to_sym}
+    links[:css] = [] if links[:css].nil?
+    links[:js] = [] if links[:js].nil?
 
     result = `juicer merge -o "#{output_file_name}.min.css" -d "#{Neo::Asset::Manager.media_dir}" -r "#{links[:css].join('" "')}" -f`
     puts result

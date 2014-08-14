@@ -11,7 +11,7 @@ class Neo::Asset::Manager
         dev:{
           coffee: ['coffee'],
           scss: ['scss'],
-          sass: ['sass']
+          sass: ['sasss']
         },
         prod:{
         }
@@ -35,9 +35,9 @@ class Neo::Asset::Manager
       links.uniq!
       links.each do |link|
         if File.extname(link) == '.css'
-          code[:css] += "<link rel=\"stylesheet\" href=\"#{root_dir+link}\" type=\"text/css\" charset=\"utf-8\" />\n"
+          code[:css] += "<link rel=\"stylesheet\" href=\"#{root_dir+link}\" type=\"text/css\" charset=\"utf-8\" />\n" if File.file? @media_dir+link
         else
-          code[:js] += "<script type=\"text/javascript\" charset=\"utf-8\" src=\"#{root_dir+link}\"></script>\n"
+          code[:js] += "<script type=\"text/javascript\" charset=\"utf-8\" src=\"#{root_dir+link}\"></script>\n" if File.file? @media_dir+link
         end
       end
       code
@@ -54,6 +54,8 @@ class Neo::Asset::Manager
         end
         files
       else
+        file = Neo::Asset::File.new(asset_selector)
+        asset_selector = file.parse
         [asset_selector]
       end
     end
