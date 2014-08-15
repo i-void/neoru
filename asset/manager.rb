@@ -102,17 +102,21 @@ class Neo::Asset::Manager
 
         if mtime != @last_version
           if @last_version.blank?
-            @media_dir += @last_version
+            @media_dir += mtime
           end
 
           file_paths.each do |file_path|
             if File.file? file_path
               file_path.gsub! @module_dir, ''
               file = Neo::Asset::File.new(file_path)
-              file.copy
+              file.mark_for_copy
             end
           end
 
+          @changed_files.each do |file_path|
+            file = Neo::Asset::File.new(file_path)
+            file.copy
+          end
 
           new_dir = @media_dir.gsub(@last_version, mtime)
           dirs = Dir["#{Neo.app_dir}/web/#{@media_dir_name}/*/*"]
@@ -123,6 +127,7 @@ class Neo::Asset::Manager
           @media_dir = new_dir
         end
 
+        @last_version = mtime
         File.write(@version_file, mtime)
       end
     end

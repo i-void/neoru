@@ -25,29 +25,47 @@ class Neo::Asset::File
       initial_path = @org_path
       parsers.reduce(@path) do |path, parser|
 
-        content = Neo::Asset::Parsers.const_get(parser.camelize, false).parse(initial_path)
-        if content
-          if content[:extension].nil?
-            File.write(@virt_path, content[:content])
-            path
+        is_css_parsed = ((parser == 'sasss' or parser == 'scss') and File.file?(@virt_path.gsub(File.extname(@virt_path),'.css')))
+        is_js_parsed = (parser == 'coffee' and File.file?(@virt_path.gsub(File.extname(@virt_path),'.js')))
+
+        if (is_css_parsed or is_js_parsed) and not Neo::Asset::Manager.changed_files.include? @path
+          if parser == 'sasss' or parser == 'scss'
+            path.gsub(File.extname(@virt_path),'.css')
           else
-            FileUtils.cp(initial_path, @virt_path)
-            initial_path = @virt_path.gsub(File.extname(@virt_path),content[:extension])
-            File.write(initial_path, content[:content])
-            path.gsub(File.extname(@virt_path),content[:extension])
+            path.gsub(File.extname(@virt_path),'.js')
           end
         else
-          FileUtils.cp(initial_path, @virt_path)
-          path
+          content = Neo::Asset::Parsers.const_get(parser.camelize, false).parse(initial_path)
+          if content
+            if content[:extension].nil?
+              File.write(@virt_path, content[:content])
+              path
+            else
+              FileUtils.cp(initial_path, @virt_path)
+              initial_path = @virt_path.gsub(File.extname(@virt_path),content[:extension])
+              File.write(initial_path, content[:content])
+              path.gsub(File.extname(@virt_path),content[:extension])
+            end
+          else
+            FileUtils.cp(initial_path, @virt_path)
+            path
+          end
         end
       end
     end
   end
 
+  def mark_for_copy
+    if is_changed?
+      Neo::Asset::Manager.changed_files << @path
+    end
+  end
+
+
   def copy
-    if not File.file?(@virt_path) or is_changed?
-      virt_dir = File.dirname(@virt_path)
-      FileUtils.mkdir_p(virt_dir) unless Dir.exist? virt_dir
+    if is_changed?
+      directory = File.dirname(@virt_path)
+      FileUtils.mkdir_p(directory) unless File.directory?(directory)
       FileUtils.cp(@org_path, @virt_path)
     end
   end
@@ -58,7 +76,7 @@ class Neo::Asset::File
     File.open(@org_path,encoding:'UTF-8').each_line do |line|
       matches = line.scan /@import( +("|')?|("|'))([^'" ]+)(("|')? *|("|')).*/
       if matches[0] and matches[0][3]
-        imports << matches[0][3]
+        imports << matches[0][3].strip
       end
     end
     imports
@@ -71,7 +89,6 @@ class Neo::Asset::File
         imported_file = "#{File.dirname @path}/_#{import}#{File.extname(@org_path)}"
         if File.file? "#{Neo::Asset::Manager.module_dir}/#{imported_file}"
           file = Neo::Asset::File.new(imported_file)
-          file.copy
           file.is_changed? ? true : memo
         else
           memo
@@ -83,13 +100,7 @@ class Neo::Asset::File
   end
 
   def is_changed?
-    if Neo::Asset::Manager.changed_files.include? @path
-      true
-    else
-      changed = (imported_changed? or File.mtime(@org_path) > File.mtime(@virt_path))
-      Neo::Asset::Manager.changed_files << @path if changed
-      changed
-    end
+    not File.file?(@virt_path) or imported_changed? or File.mtime(@org_path) > File.mtime(@virt_path)
   end
 
   def fill_content
