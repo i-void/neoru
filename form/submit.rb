@@ -1,8 +1,14 @@
 class Neo::Form::Submit < Neo::Form::Input
-  attr_accessor :value
-
   def initialize(opts)
     super(opts)
+  end
+
+  def value=(value)
+		@opts[:value] = value
+  end
+
+  def value
+	  @opts[:value]
   end
 
   def to_tag

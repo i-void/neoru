@@ -37,6 +37,13 @@ class Neo::Form::Input
     end
   end
 
+  def value=(value)
+		@attr[:value] = value
+  end
+
+  def value
+	  @attr[:value]
+  end
   # attributeleri diziden tag stringine çevirip getirir
   def get_attr_string
     if @attr.nil?

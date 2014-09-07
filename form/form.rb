@@ -18,6 +18,24 @@ class Neo::Form
       new_input_class = input_class.new(input)
       self.class.send(:define_method,input_bare_name) { new_input_class }
     end
+
+		fill_from_post
+  end
+
+  def take_post_data
+	  form_data = Neo.req.POST.select {|k| k.start_with? "#{@data[:name]}_"}
+	  form_data.hmap {|k,v| [k.gsub(/^#{@data[:name]}_/, ''), v] }
+  end
+
+  def fill_from_post
+		if posted?
+			post_data = take_post_data
+			@data[:inputs].each do |input|
+				bare_name = input[:name].gsub(/^#{@data[:name]}_/, '')
+				input_inst = self.send bare_name
+				input_inst.value = post_data[bare_name]
+			end
+		end
   end
 
   def start
@@ -52,9 +70,7 @@ class Neo::Form
   # @param model [Hash] post datasının bağlamak istediğin model
   # @return [Neo::Database::Model]
   def fill_model(model)
-    form_data = Neo.req.POST.select {|k| k.start_with? "#{@data[:name]}_"}
-    form_data.hmap! {|k,v| [k.gsub(/^#{@data[:name]}_/, ''), v] }
-    model.fill_model form_data
+    model.fill_model take_post_data
   end
 
 end

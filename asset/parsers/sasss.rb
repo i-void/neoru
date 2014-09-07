@@ -1,5 +1,4 @@
 require 'sass'
-require '/home/cm/.gem/ruby/gems/sass-3.3.14/lib/sass.rb' #bunu kaldır
 
 module Neo
   module Asset
