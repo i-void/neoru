@@ -31,8 +31,12 @@ module Neo
       Neo::I18N::translate(phrase,lang)
     end
 
-
-
+    def generate_url(name, parameters=[])
+      url = Neo::Config.main[:routes][name][0]
+      parameters.reduce(url) do |retval, i|
+        "#{retval}/#{i}"
+      end
+    end
 
 	end
 end
