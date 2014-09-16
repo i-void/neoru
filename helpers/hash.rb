@@ -14,4 +14,8 @@ class Hash
   def hmap(&block)
     Hash[self.map {|k, v| block.call(k,v) }]
   end
+
+  def to_query
+    URI.escape(self.collect{|k,v| "#{k}=#{v}"}.join('&'))
+  end
 end
