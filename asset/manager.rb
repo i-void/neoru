@@ -92,11 +92,12 @@ class Neo::Asset::Manager
 
     # copy assets to media folder
     def copy_assets
+      all_asset_files = Dir["#{Neo.app_dir}/modules/*/assets/**{,/*/**}/*.*"]
       file_paths = Dir[@module_dir + '**{,/*/**}/*.*']
 
       unless file_paths.blank?
         # find the last modified time from files
-        mtime = file_paths.reduce(0) { |max_time, path| [File.mtime(path).to_i, max_time].max }.to_i.to_s(32)
+        mtime = all_asset_files.reduce(0) { |max_time, path| [File.mtime(path).to_i, max_time].max }.to_i.to_s(32)
 
         @media_dir += '/' + Neo::Params.module + '/' + @last_version
 
