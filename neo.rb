@@ -31,9 +31,9 @@ module Neo
       Neo::I18N::translate(phrase,lang)
     end
 
-    def widget(name, params)
+    def widget(name, params={})
       module_name, widget_name = name.split(':')
-      widget = "#{module_name.camelize}::Widgets::#{widget_name.camelize}".to_obj.new.render
+      widget = "#{module_name.camelize}::Widgets::#{widget_name.camelize}".to_obj.new.render(params)
     end
 
     def generate_url(name, parameters=[])
