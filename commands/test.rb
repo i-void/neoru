@@ -45,7 +45,7 @@ class Neo::Commands::Test < Neo::Command
       puts "File: #{result[:file_path]}:#{result[:line_number]}"
       puts result[:exception][:message] if result[:status] == 'failed'
       puts result[:exception][:backtrace] if result[:status] == 'failed'
-      puts "-----------------------------------------------------"
+      puts '-----------------------------------------------------'
     end
     puts results[:summary_line]
     puts ''

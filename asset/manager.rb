@@ -92,7 +92,7 @@ class Neo::Asset::Manager
 
     # copy assets to media folder
     def copy_assets
-      file_paths = Dir[@module_dir + '/**/*']
+      file_paths = Dir[@module_dir + '**{,/*/**}/*.*']
 
       unless file_paths.blank?
         # find the last modified time from files
