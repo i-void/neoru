@@ -96,11 +96,11 @@ class Neo::Asset::Manager
 
       unless file_paths.blank?
         # find the last modified time from files
-        mtime = File.mtime(file_paths.max_by { |path| File.file?(path) ? File.mtime(path).to_i : 0 }).to_i.to_s(32)
+        mtime = file_paths.reduce(0) { |max_time, path| [File.mtime(path).to_i, max_time].max }.to_i.to_s(32)
 
         @media_dir += '/' + Neo::Params.module + '/' + @last_version
 
-        if mtime != @last_version
+        if mtime != @last_version or not File.directory?(@media_dir)
           if @last_version.blank?
             @media_dir += mtime
           end
