@@ -16,6 +16,7 @@ module Neo
       Neo::Event.register(:before_action) {Neo::Asset::Manager.init}
       @mail = Neo::Mail.new
       @conf = Neo::Config.main
+      Neo::I18N.init
 		end
 
 		def http_response
