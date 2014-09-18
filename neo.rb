@@ -13,10 +13,13 @@ module Neo
 			@req = Rack::Request.new(Neo.server_vars)
 
 			Neo::Router.build_module_data
-      Neo::Event.register(:before_action) {Neo::Asset::Manager.init}
+      Neo::Event.register(:before_action) {
+        Neo::Asset::Manager.init
+        Neo::I18N.init
+      }
       @mail = Neo::Mail.new
       @conf = Neo::Config.main
-      Neo::I18N.init
+
 		end
 
 		def http_response

@@ -10,19 +10,26 @@ module Neo
       paths << "#{Neo.app_dir}/modules/*/i18_n/*.rb"
       # find in Neo
       paths << "#{Neo.dir}/i18_n/*.rb"
-      paths.reduce([]) do |files, path|
-        files += Dir[path]
-      end
+      paths.reduce([]) {|files, path|  files += Dir[path]}
     end
 
+    @phrases = {}
+
     def init
-      @phrases = {}
       language_files.each {|file| require file }
     end
 
     def translate(phrase, lang)
+      if @phrases[lang].nil?
+        Neo::Exception.new(500, "Can't find the phrases for language: #{lang}").raise
+      end
       found = @phrases[lang].find{|i| i[0]==phrase}
-      found[1]
+      if found.nil?
+        puts "Can't find a translation for #{phrase}. Returning original one"
+        phrase
+      else
+        found[1]
+      end
     end
 
     def change_lang(lang)
