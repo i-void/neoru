@@ -18,6 +18,7 @@ class Neo::Form::Upload < Neo::Form::Input
 
       <div name="#{@opts[:name]}" id="#{@opts[:name]}" #{get_attr_string} >
         #{@opts[:label].if_nil{''}}
+        #{error_html}
       </div>
 
       <div class="progress-wrapper">

@@ -11,6 +11,7 @@ class Neo::Form::Checkbox < Neo::Form::Input
     @attr.each do |k,v|
       tag += "#{k}=\"#{v}\" "
     end
-    tag + "/><label for=\"#{@name}\">#{@label}</label>"
+    tag += "/><label for=\"#{@name}\">#{@label}</label>"
+    tag + error_html
   end
 end

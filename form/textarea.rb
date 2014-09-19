@@ -8,7 +8,8 @@ class Neo::Form::Textarea < Neo::Form::Input
   def to_tag
     tag = '<textarea name="'+@opts[:name]+'" id="'+@opts[:name]+'" '+get_attr_string.to_s
     tag += @opts[:value] unless @opts[:value].blank?
-    tag + '></textarea>'
+    tag += '></textarea>'
+    tag + error_html
   end
 
 end

@@ -26,7 +26,7 @@ class Neo::Router
     end
 
     def action_call(module_name, controller_name=nil, action_name='index')
-      pp "Executed Action: [Module=>#{module_name}, Controller=>#{controller_name}, Action=>#{action_name}]"
+      pp "Executed Action: [Module=>#{module_name}, Controller=>#{controller_name}, Action=>#{action_name}]" if Neo::Params.env == 'dev'
       controller_name = module_name if controller_name.nil?
       Neo::Params.module = module_name
       Neo::Params.controller = controller_name
@@ -34,9 +34,14 @@ class Neo::Router
       action_name += '_action'
       require_controller module_name, controller_name
       Neo::Event.trigger :before_action
-      response = Kernel
-        .const_get(module_name.camelize).const_get('Controllers').const_get(controller_name.camelize)
-        .new.send(action_name, *@params)
+      begin
+        response = Kernel
+          .const_get(module_name.camelize).const_get('Controllers').const_get(controller_name.camelize)
+          .new.send(action_name, *@params)
+      rescue
+        error_msg = Neo.trn('Path not found or parameter count not match on {{url}}').gsub '{{url}}', Neo.server_vars['REQUEST_PATH']
+        response = Neo::Exception.new(404, error_msg).raise
+      end
       Neo::Event.trigger :after_action
       response
     end

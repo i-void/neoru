@@ -56,13 +56,13 @@ class Neo::Form::Input
     end
   end
 
-  def print_error(tag)
+  def error_html
     if @errors.blank?
       ''
     else
-      error_text = @errors.reduce('') {|error_text, error| error_text += (error + '<br>')}
-      error_text = error_text[0..-5]
-      "<div class='validation_error'>#{error_text}</div>"
+      # error_text = @errors.reduce('') {|error_text, error| error_text += (error + '<br>')}
+      # error_text = error_text[0..-5]
+      "\n<div class='validation_error'>#{@errors[0]}</div>"
     end
   end
 

@@ -9,6 +9,7 @@ class Neo::Form::Datetime < Neo::Form::Input
     input_tag = '<input type="text" class="form-control" value="" readonly '
     input_tag += 'value="'+@opts[:value]+'" ' unless @opts[:value].blank?
     input_tag += get_attr_string.to_s + '/>'
+    input_tag += error_html
 
     '
     <div class="input-append date" id="'+@opts[:name]+'"">

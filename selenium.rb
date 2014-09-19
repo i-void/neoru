@@ -29,5 +29,9 @@ module Neo
       elem
     end
 
+    def page_contains?(text)
+      @driver.page_source.include? text
+    end
+
   end
 end

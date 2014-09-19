@@ -9,7 +9,7 @@ class Neo::Form::Textfield < Neo::Form::Input
     tag = '<input type="text" name="'+@opts[:name]+'" id="'+@opts[:name]+'" '
     tag += 'value="'+@opts[:value]+'" ' unless @opts[:value].nil?
     tag += get_attr_string.to_s + '/>'
-    tag + print_error(tag)
+    tag + error_html
   end
 
 end
