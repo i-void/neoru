@@ -34,14 +34,14 @@ class Neo::Router
       action_name += '_action'
       require_controller module_name, controller_name
       Neo::Event.trigger :before_action
-      begin
+      # begin
         response = Kernel
           .const_get(module_name.camelize).const_get('Controllers').const_get(controller_name.camelize)
           .new.send(action_name, *@params)
-      rescue Exception=>e
-        error_msg = Neo.trn('Path not found or parameter count not match on {{url}}').gsub '{{url}}', Neo.server_vars['REQUEST_PATH']
-        response = Neo::Exception.new(404, error_msg).raise
-      end
+      # rescue Exception=>e
+      #   error_msg = Neo.trn('Path not found or parameter count not match on {{url}}').gsub '{{url}}', Neo.server_vars['REQUEST_PATH']
+      #   response = Neo::Exception.new(404, error_msg).raise
+      # end
       Neo::Event.trigger :after_action
       response
     end

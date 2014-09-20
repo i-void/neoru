@@ -15,7 +15,7 @@ class Neo::Form::Validations::EqualTo < Neo::Form::Validations::Base
 
   def get_tag_attributes
     {
-      'data-rule-equal-to' => @field_label,
+      'data-rule-equal-to' => "#{@form.data[:name]}_#{@opts[:field]}",
       'data-msg-equal-to' => @error
     }
   end
