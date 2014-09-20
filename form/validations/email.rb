@@ -1,5 +1,5 @@
 class Neo::Form::Validations::Email < Neo::Form::Validations::Base
-  def initialize(opts)
+  def initialize(opts, form)
     defaults = {message: Neo.trn('Please enter a valid email address')}
     @opts = defaults.deep_merge opts
     @error = @opts[:message]

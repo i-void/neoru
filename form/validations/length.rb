@@ -2,7 +2,7 @@ class Neo::Form::Validations::Length < Neo::Form::Validations::Base
 
   # opts
   #   :min, :max, :min_message, :max_message
-  def initialize(opts)
+  def initialize(opts,form)
     defaults = {
       exact_message: Neo.trn('This value should have exactly {{limit}} characters.'),
       min_message: Neo.trn('This value is too short. It should have {{limit}} characters or more.'),

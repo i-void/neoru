@@ -1,3 +1,3 @@
 class Neo::Form::Validations::Base
-  attr_accessor :error, :form
+  attr_accessor :error
 end

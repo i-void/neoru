@@ -15,6 +15,7 @@ class Neo::Form
       input_class = Neo::Form.const_get(input[:type].capitalize)
       input_bare_name = input[:name]
       input[:name] = @data[:name] + '_' +input[:name]
+      input[:form] = self
       new_input_class = input_class.new(input)
       self.class.send(:define_method,input_bare_name) { new_input_class }
     end
@@ -54,7 +55,6 @@ class Neo::Form
       form_data = Neo.req.POST.select {|k| k.start_with? "#{@data[:name]}_"}
       bare_name = input[:name].gsub(/^#{@data[:name]}_/, '')
       input_inst = self.send bare_name
-      input_inst.form = self
       result = input_inst.valid? form_data
       @errors[bare_name] = input_inst.errors unless result
       (not result) ? result : memo

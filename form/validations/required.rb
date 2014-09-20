@@ -1,5 +1,5 @@
 class Neo::Form::Validations::Required < Neo::Form::Validations::Base
-  def initialize(opts)
+  def initialize(opts, form)
     defaults = {message: Neo.trn('Don\'t leave this field blank')}
     @opts = defaults.deep_merge opts
     @error = @opts[:message]
