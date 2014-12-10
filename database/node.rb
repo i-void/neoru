@@ -51,8 +51,7 @@ class Neo::Database::Node
       cypher.add_parameters(:rel_params=>relation_props)
     end
     cypher.set_return('r')
-    result = cypher.run
-    return result
+    cypher.run
   end
 
   def upsert
@@ -60,10 +59,9 @@ class Neo::Database::Node
       id = generate_id
       insert(id)
       @id = id
-      return id
     else
       update
-      return @id
+      @id
     end
   end
 

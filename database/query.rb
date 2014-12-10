@@ -1,6 +1,5 @@
 require 'json'
 require 'rest_client'
-require 'hash_deep_merge'
 require 'pp'
 
 module Neo
@@ -28,39 +27,34 @@ module Neo
       def get_all
         result = run
         modified_result = []
-        if result['data'].blank?
-          return nil
-        else
+        unless result['data'].blank?
           result['data'].each do |row|
             modified_row = []
             row.each do |cell|
+              return nil if cell.nil?
               if cell.kind_of?(String) or cell.kind_of?(Fixnum)
                 modified_row << cell
               else
-                return nil if cell.nil?
                 modified_row << cell['data']
               end
             end
             modified_result << modified_row
           end
-          return modified_result
+          modified_result
         end
       end
 
       def get
         result = run
         modified_result = []
-        if result['data'].blank?
-          return nil
-        else
+        unless result['data'].blank?
           if result['data'].length == 1
             row = result['data'][0]
             if row.length == 1
               if row[0].kind_of?(String) or row[0].kind_of?(Fixnum)
-                return row[0]
+                row[0]
               else
-                return nil if row[0].nil?
-                return row[0]['data']
+                (row[0].nil?) ? nil : row[0]['data']
               end
             else
               row.each do |cell|
@@ -146,13 +140,14 @@ module Neo
           types = {1=>'ASC',-1=>'DESC'}
           @phrase.order << node_sign+' '+types[sort_type]
         end
-        return self
+        self
       end
 
       def add_match(node_sign,labels='',properties='',suffix='')
         labels = [labels] unless labels.kind_of?(Array)
         if labels.length>0
-          labels = ':'+labels.join(':')
+					labels.unshift Neo::Config.main[:db][:name] unless labels.include? Neo::Config.main[:db][:name]
+          labels = ":#{labels.join(':')}"
         else
           labels = ''
         end
@@ -169,7 +164,7 @@ module Neo
           @param_uid+=1
         end
         @phrase.match << '('+node_sign + labels + prop_str+')'+suffix
-        return self
+        self
       end
 
       def fill_model(model)
@@ -193,7 +188,8 @@ module Neo
       def add_create(node_sign,labels='',properties='',suffix='')
         labels = [labels] unless labels.kind_of?(Array)
         if labels.length>0
-          labels = ':'+labels.join(':')
+	        labels.unshift Neo::Config.main[:db][:name] unless labels.include? Neo::Config.main[:db][:name]
+	        labels = ":#{labels.join(':')}"
         else
           labels = ''
         end
@@ -205,7 +201,7 @@ module Neo
           @param_uid+=1
         end
         @phrase.create << '('+node_sign + labels + prop_str+')'+suffix
-        return self
+        self
       end
 
       def add_update(id,node_sign,labels='',properties='',suffix='')
@@ -218,33 +214,33 @@ module Neo
           @param_uid+=1
         end
         @phrase.update << ' '+node_sign + ' = ' + prop_str+' '+suffix
-        return self
+        self
       end
 
       def add_label(label)
         @phrase.label << label
-        return self
+        self
       end
 
       def set_limit(limit)
         @limit = limit
-        return self
+        self
       end
 
       def add_parameters(params)
         @parameters['params'] = {} if @parameters['params'].blank?
         @parameters['params'].deep_merge!(params)
-        return self
+        self
       end
 
       def add_labels(labels)
         @phrase.label += labels
-        return self
+        self
       end
 
       def set_return(return_str)
         @return = return_str
-        return self
+        self
       end
 
       def add_where(params, operator='AND', depth=0)
@@ -260,7 +256,7 @@ module Neo
           prefix = ''
         end
         @where_depth = depth
-        return self
+        self
       end
 
       def add_set(set_data, params)
@@ -272,7 +268,7 @@ module Neo
           @param_uid+=1
         end
         @phrase.set << 'SET '+ set_data+prop_str
-        return self
+        self
       end
 
       def query(q_str,parameters={})
@@ -311,7 +307,7 @@ module Neo
         unless @limit.blank?
           @parameters[:query] += 'LIMIT '+@limit.to_s+' '
         end
-        return @parameters['query']
+        @parameters['query']
       end
     end
   end

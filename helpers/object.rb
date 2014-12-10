@@ -10,4 +10,15 @@ class Object
   def if_nil
     nil? ? yield : self
   end
+
+  def filled?(func=nil)
+    if func or block_given?
+      unless self.blank?
+        ret = func ? self.send(func) : nil
+        block_given? ? yield : ret
+      end
+    else
+      not self.blank?
+    end
+  end
 end

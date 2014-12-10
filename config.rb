@@ -1,20 +1,41 @@
-require 'hash_deep_merge'
+module App
+  class Conf
+    @default = {}
+    @dev = {}
+    @prod = {}
 
-module Neo::Config
-  class << self
-    attr_accessor :main
+    def self.default(opts=nil)
+      opts.nil? ? @default : @default.deep_merge!(opts)
+    end
+
+    def self.dev(opts=nil)
+      opts.nil? ? @dev : @dev.deep_merge!(opts)
+    end
+
+    def self.prod(opts=nil)
+      opts.nil? ? @prod : @prod.deep_merge!(opts)
+    end
   end
+end
 
-  Dir[Neo.app_dir+'/config/*.rb'].each do |f|
-    require f
+
+module Neo
+  class Config
+    class << self
+      attr_accessor :main
+    end
+
+    config_directories = %W(#{Neo.app_dir}/config/*.rb #{Neo.app_dir}/modules/*/config/*.rb)
+    config_directories.each do |dir|
+      Dir[dir].each do |f|
+        require f
+      end
+    end
+
+    env_var = App::Conf.default[:env]
+    env = App::Conf.send(env_var)
+    Neo::Params.env = env_var
+    @main = App::Conf.default
+    @main.deep_merge!(env)
   end
-
-  App::Conf.make_static
-
-  env_var = "@#{App::Conf.init[:env]}"
-  env = App::Conf.instance_variable_get(env_var)
-  env[:asset_sets] = App::Conf.asset_sets
-  env[:assets] = App::Conf.assets
-  Neo::Params.env = App::Conf.init[:env]
-  @main = App::Conf.init.deep_merge(env)
 end

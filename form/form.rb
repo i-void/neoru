@@ -1,5 +1,3 @@
-require 'hash_deep_merge'
-
 class Neo::Form
   attr_accessor :data, :errors
   # create form class from data

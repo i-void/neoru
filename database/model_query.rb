@@ -21,8 +21,7 @@ class Neo::Database::ModelQuery < Neo::Database::Cypher
   end
 
   def filter_by_id(id)
-    self.add_where([['id','=', "'#{id}'"]])
-    self
+    self.add_where([%w(id = {id})]).add_parameters(id: id)
   end
 
   def count

@@ -1,5 +1,3 @@
-require 'hash_deep_merge'
-
 class Neo::Form::Input
   attr_accessor :name,:errors,:label,:attr,:opts
   attr_reader :validations

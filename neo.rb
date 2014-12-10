@@ -1,6 +1,5 @@
 require 'pp'
 require 'rack'
-require 'hash_deep_merge'
 
 module Neo
 	class << self

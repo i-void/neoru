@@ -16,10 +16,11 @@ module Neo
         class << self
           def parse(file)
             if ::File.basename(file, '.sass').start_with?('_')
-              return false
+              false
+            else
+              engine = ::Sass::Engine.for_file(file, @options)
+              {content: engine.render, extension: '.css'}
             end
-            engine = ::Sass::Engine.for_file(file, @options)
-            {content: engine.render, extension: '.css'}
           end
         end
       end

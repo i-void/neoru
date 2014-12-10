@@ -9,6 +9,7 @@ class Neo::Asset::Manager
       @media_dir_name = 'media'
       @parsers = {
         dev:{
+          rb: ['opal'],
           coffee: ['coffee'],
           scss: ['scss'],
           sass: ['sasss']
