@@ -7,5 +7,5 @@ Feature: Routing
     Then <false_url> must give error
     Examples:
       | regexp                                            | true_url            | false_url            |
-      | /\w{8}/                                              | /test/12345678      | /test/123456789      |
+      | /\w{8}/                                           | /test/12345678      | /test/123456789      |
       | /([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?/  | /test/www.yahoo.com | /test/www..yahoo.com |

@@ -123,7 +123,9 @@ module Neo
                 return JSON.parse(response)
               when 400
                 resp = JSON.parse(response)
-                return Neo::Database::Exception.new(resp['exception'] + ' | ' + resp['message']).raise
+                return Neo::Exceptions::DatabaseError.new(
+                  resp['exception'] + ' | ' + resp['message']
+                ).raise
               else
                 return nil
             end

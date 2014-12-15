@@ -8,7 +8,11 @@ class Neo::Form::Validations::EqualTo < Neo::Form::Validations::Base
       message: Neo.trn('This value should be equal to {{compared_value}}'),
     }
     @opts = defaults.deep_merge opts
-    Neo::Exception.new(500, Neo.trn('You must set field parameter for EqualTo validator')).raise if @opts[:field].nil?
+
+    Neo::Exceptions::SystemError.new(
+      Neo.trn('You must set field parameter for EqualTo validator')
+    ).raise if @opts[:field].nil?
+
     @field_label = @form.send(@opts[:field]).opts[:label]
     @error = @opts[:message].gsub('{{compared_value}}',@field_label)
   end
@@ -25,7 +29,9 @@ class Neo::Form::Validations::EqualTo < Neo::Form::Validations::Base
     compared_value = form_data["#{@form.data[:name]}_#{@opts[:field]}"]
 
     unless @form.respond_to? @opts[:field]
-      Neo::Exception.new(500, Neo.trn('Form doesn\'t have a field named: {{field}}').gsub('{{field}}',@opts[:field].to_s)).raise
+      Neo::Exceptions::SystemError.new(
+        Neo.trn('Form doesn\'t have a field named: {{field}}').gsub('{{field}}',@opts[:field].to_s)
+      ).raise
     end
 
     val == compared_value

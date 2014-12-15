@@ -1,7 +1,6 @@
 require 'selenium-webdriver'
 module Neo
   module Selenium
-    extend self
 
     def init
       @driver = nil
@@ -111,5 +110,6 @@ module Neo
 					perform
 		end
 
+	  make_modular
   end
 end

@@ -20,5 +20,5 @@ World do
     }
   end
 
-  Neo.init
+  Neo.run
 end
