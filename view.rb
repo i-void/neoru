@@ -17,7 +17,7 @@ class Neo::View
   end
 
   def render(params)
-    @renderer = Haml::Engine.new(File.read(@path,encoding: 'UTF-8'))
+    @renderer = Haml::Engine.new(File.read(@path,encoding: 'UTF-8',ugly:(Neo::Config.main[:env] == 'prod')))
     @renderer.render(Object.new, params)
   end
 

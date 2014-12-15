@@ -1,7 +1,7 @@
 class Module
 	def make_modular
 		extend self
-		self.init if self.respond_to? :init
+		self.send :initialize
 		def copy_initial_instance_vars(extender)
 			self.instance_variables.each do |var|
 				extender.instance_variable_set(var, self.instance_variable_get(var))
@@ -11,7 +11,6 @@ class Module
 			copy_initial_instance_vars extender
 		end
 		def self.included(extender)
-			alias_method :initialize, :init if self.respond_to? :init
 			copy_initial_instance_vars extender
 		end
 	end
