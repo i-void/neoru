@@ -11,12 +11,12 @@ module Neo
         phrase_struct = Struct.new(:select,:match,:update,:label,:create,:where,:set,:order)
         @phrase = phrase_struct.new([],[],[],[],[],[],[],[])
 
-        if Neo::Config.main[:db][:host].blank?
+        if Neo::Config[:db][:host].blank?
           @uri = '127.0.0.1'
         else
-          @uri = Neo::Config.main[:db][:host]
+          @uri = Neo::Config[:db][:host]
         end
-        @uri +=  ':' + Neo::Config.main[:db][:port].to_s
+        @uri +=  ':' + Neo::Config[:db][:port].to_s
         @command = command
         @where_depth = 0
         @param_uid = 0
@@ -148,7 +148,7 @@ module Neo
       def add_match(node_sign,labels='',properties='',suffix='')
         labels = [labels] unless labels.kind_of?(Array)
         if labels.length>0
-					labels.unshift Neo::Config.main[:db][:name] unless labels.include? Neo::Config.main[:db][:name]
+					labels.unshift Neo::Config[:db][:name] unless labels.include? Neo::Config[:db][:name]
           labels = ":#{labels.join(':')}"
         else
           labels = ''
@@ -190,7 +190,7 @@ module Neo
       def add_create(node_sign,labels='',properties='',suffix='')
         labels = [labels] unless labels.kind_of?(Array)
         if labels.length>0
-	        labels.unshift Neo::Config.main[:db][:name] unless labels.include? Neo::Config.main[:db][:name]
+	        labels.unshift Neo::Config[:db][:name] unless labels.include? Neo::Config[:db][:name]
 	        labels = ":#{labels.join(':')}"
         else
           labels = ''
@@ -274,7 +274,7 @@ module Neo
       end
 
       def query(q_str,parameters={})
-        q_str.gsub!(/:\$/,':'+Neo::Config.main[:db][:name])
+        q_str.gsub!(/:\$/,':'+Neo::Config[:db][:name])
         @parameters[:query] = q_str
         add_parameters(parameters)
       end

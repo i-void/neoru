@@ -6,7 +6,7 @@ class Neo::Database::ModelQuery < Neo::Database::Cypher
     @model = Kernel.const_get(module_name).const_get('Models').const_get(class_name)
     @labels = @model.new.labels
     @labels = [@labels] if @labels.kind_of?(String)
-    add_match('n',@labels+ [Neo::Config.main[:db][:name]])
+    add_match('n',@labels+ [Neo::Config[:db][:name]])
   end
 
   def find_one

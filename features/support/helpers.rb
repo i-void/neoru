@@ -4,21 +4,8 @@ World do
 
   require './neo'
 
-  Neo.app_dir = '.'
+  Neo.app_dir = "#{File.dirname(__FILE__)}/../../features_fake_app"
   Neo.dir = '.'
-
-  module Neo::Config
-    extend self
-
-    attr_accessor :main
-
-    @main = {
-      :env => 'dev',
-      :default_module => 'site',
-      :lang => 'TrTr',
-      :routes => {}
-    }
-  end
 
   Neo.run
 end

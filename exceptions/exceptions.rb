@@ -7,7 +7,7 @@ module Neo
 		end
 
 		def raise
-			if Neo::Config.main[:env] == 'dev'
+			if Neo::Config[:env] == 'dev'
 				Kernel.raise self, "#{@code}: #{@msg}"
 			else
 				Neo::Response.send("error#{@code}")

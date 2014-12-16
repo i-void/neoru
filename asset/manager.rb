@@ -47,7 +47,7 @@ class Neo::Asset::Manager
     # if the selector contains # at start, then find it from asset_sets else return bare file path
     def get_asset_file(asset_selector)
       files = []
-      asset_sets = Neo::Config.main[:asset_sets]
+      asset_sets = Neo::Config[:asset_sets]
       if asset_selector.start_with? '#'
         set_files = asset_sets[asset_selector.gsub('#','').to_sym]
         set_files.each do |set_file|
@@ -78,10 +78,9 @@ class Neo::Asset::Manager
     # get links for css and js files which set on config file
     def get_dev_links
       links = []
-      conf = Neo::Config.main
       full_action_path = Neo::Params.module + ':' + Neo::Params.controller + ':' + Neo::Params.action
-      unless conf[:assets].nil?
-        asset_arr = conf[:assets].find{|asset| asset[:action]==full_action_path }
+      unless Neo::Config[:assets].nil?
+        asset_arr = Neo::Config[:assets].find{|asset| asset[:action]==full_action_path }
         unless asset_arr.nil?
           asset_arr[:files].each do |asset_file|
             links += get_asset_file(asset_file)

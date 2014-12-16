@@ -108,7 +108,7 @@ class Neo::Router
     end
 
     def check_from_config
-      Neo::Config.main[:routes].reduce(nil) do |ret, (name, data)|
+      Neo::Config[:routes].reduce(nil) do |ret, (name, data)|
         data[3]='get' if data[3].blank?
         route_reg, param_reg, action, method = data
         param_reg = '/'+param_reg if param_reg[0]!='/'
@@ -138,7 +138,7 @@ class Neo::Router
       else
         uri_parts = Neo.server_vars['REQUEST_PATH'].split('/')[1..-1]
 
-        @default_module = Neo::Config.main[:default_module] unless Neo::Config.main[:default_module].blank?
+        @default_module = Neo::Config[:default_module] unless Neo::Config[:default_module].blank?
         @default_controller = @default_module
 
         #if the route matches with one of the config param then call action from config

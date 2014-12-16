@@ -1,5 +1,5 @@
 Given(/^add route as \/test with parameters will tested by (.*)$/) do |regexp|
-  Neo::Config.main[:routes][:test] = ['/test', "#{regexp}", 'main:main:index', 'get']
+  Neo::Config[:routes][:test] = ['/test', "#{regexp}", 'main:main:index', 'get']
   Neo.server_vars['REQUEST_METHOD'] = 'get'
 end
 

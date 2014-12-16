@@ -20,22 +20,32 @@ end
 
 
 module Neo
-  class Config
-    class << self
-      attr_accessor :main
-    end
+  module Config
+    attr_accessor :main
 
-    config_directories = %W(#{Neo.app_dir}/config/*.rb #{Neo.app_dir}/modules/*/config/*.rb)
-    config_directories.each do |dir|
-      Dir[dir].each do |f|
-        require f
+    def initialize
+      config_directories = %W(#{Neo.app_dir}/config/*.rb #{Neo.app_dir}/modules/*/config/*.rb)
+      config_directories.each do |dir|
+        Dir[dir].each do |file|
+          require file
+        end
       end
+
+      env_var = App::Conf.default[:env]
+      env = App::Conf.send(env_var)
+      Neo::Params.env = env_var
+      @main = App::Conf.default
+      @main.deep_merge!(env)
     end
 
-    env_var = App::Conf.default[:env]
-    env = App::Conf.send(env_var)
-    Neo::Params.env = env_var
-    @main = App::Conf.default
-    @main.deep_merge!(env)
+    def [](key)
+      @main[key]
+    end
+
+    def []=(key,value)
+      @main[key] = value
+    end
+
+    make_modular
   end
 end

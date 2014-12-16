@@ -2,7 +2,7 @@ class Neo::Database::Node
   attr_accessor :properties,:labels,:id,:model
 
   def initialize
-    @labels = [Neo::Config.main[:db][:name]]
+    @labels = [Neo::Config[:db][:name]]
   end
 
   def fill_from_model(model)
@@ -67,7 +67,7 @@ class Neo::Database::Node
 
   def increase_id(id)
     table_name = 'Neo4jUniqueId'
-    labels = [Neo::Config.main[:db][:name],table_name]
+    labels = [Neo::Config[:db][:name],table_name]
     uid_cyp = Cypher.new
     uid_cyp.add_match('n',labels)
     uid_cyp.add_set('n',{:id=>id})
@@ -77,7 +77,7 @@ class Neo::Database::Node
 
   def generate_id
     table_name = 'Neo4jUniqueId'
-    labels = [Neo::Config.main[:db][:name],table_name]
+    labels = [Neo::Config[:db][:name],table_name]
     cypher = Cypher.new
     cypher.add_match('n',labels)
     cypher.set_return('n.id')
@@ -85,13 +85,13 @@ class Neo::Database::Node
     if result['data'].length>0
       id  = result['data'][0][0].to_s
       id = id.to_i(36)+1
-      return id.to_s(36)
+      id.to_s(36)
     else
       create = Cypher.new
       create.add_create('n',labels,{:id=>1})
       create.set_return('n')
       create.run
-      return '1'
+      '1'
     end
   end
 end

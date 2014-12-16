@@ -15,7 +15,6 @@ module Neo
       Neo::Asset::Manager.init
     }
     @mail = Neo::Mail.new
-    @conf = Neo::Config.main
   end
 
   def http_response
@@ -27,7 +26,7 @@ module Neo
     root_dir + file
   end
 
-  def trn(phrase, lang=Neo::Config.main[:lang])
+  def trn(phrase, lang=Neo::Config[:lang])
     Neo::I18N.translate(phrase,lang)
   end
 
@@ -37,7 +36,7 @@ module Neo
   end
 
   def generate_url(name, parameters=[])
-    url = Neo::Config.main[:routes][name][0]
+    url = Neo::Config[:routes][name][0]
     parameters.reduce(url) do |retval, i|
       "#{retval}/#{i}"
     end

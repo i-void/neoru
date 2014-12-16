@@ -2,7 +2,7 @@ require 'selenium-webdriver'
 module Neo
   module Selenium
 
-    def init
+    def initialize
       @driver = nil
       @wait = nil
     end

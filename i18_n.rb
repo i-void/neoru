@@ -2,7 +2,7 @@ module Neo
   module I18N
     attr_accessor :phrases
 
-    def init
+    def initialize
       @phrases = {}
       language_files.each {|file| require file }
     end
@@ -29,7 +29,7 @@ module Neo
     end
 
     def change_lang(lang)
-      Neo::Config.main[:lang] = lang
+      Neo::Config[:lang] = lang
     end
 
     def add(lang, phrase_array)
