@@ -12,7 +12,7 @@ class Neo::Asset::Manager
           rb: ['opal'],
           coffee: ['coffee'],
           scss: ['scss'],
-          sass: ['sasss']
+          sass: ['sass']
         },
         prod:{
         }

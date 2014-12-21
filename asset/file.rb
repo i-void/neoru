@@ -1,7 +1,7 @@
 require 'fileutils'
 require 'pathname'
 
-# Asset dosyası sınıfı
+
 class Neo::Asset::File
   # dosya kendi yolunu ve kopya yolunu ayarlar
   # eğer dosyanın kopyası yoksa veya orjinalde değiştirilmişse yenisini kopyalar
@@ -25,11 +25,11 @@ class Neo::Asset::File
       initial_path = @org_path
       parsers.reduce(@path) do |path, parser|
 
-        is_css_parsed = ((parser == 'sasss' or parser == 'scss') and File.file?(@virt_path.gsub(File.extname(@virt_path),'.css')))
+        is_css_parsed = ((parser == 'sass' or parser == 'scss') and File.file?(@virt_path.gsub(File.extname(@virt_path),'.css')))
         is_js_parsed = (parser == 'coffee' and File.file?(@virt_path.gsub(File.extname(@virt_path),'.js')))
 
         if (is_css_parsed or is_js_parsed) and not Neo::Asset::Manager.changed_files.include? @path
-          if parser == 'sasss' or parser == 'scss'
+          if parser == 'sass' or parser == 'scss'
             path.gsub(File.extname(@virt_path),'.css')
           else
             path.gsub(File.extname(@virt_path),'.js')
