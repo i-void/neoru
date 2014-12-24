@@ -5,10 +5,19 @@ module Neo
     module Parsers
       class Sass
 
+        # adds compass to load paths
+        #   can be added more load paths later
+        # @return [Array<String>] sass load paths
+        def self.get_load_paths
+          paths = ['.']
+          compass = Neo.detect_gem_path 'compass-core'
+          compass ? paths + ["#{compass}/stylesheets"] : paths
+        end
+
         # init sass parser with these options
         OPTIONS = {
           style: :nested,
-          :load_paths => %w[. /usr/local/share/gems/gems/compass-recipes-0.3.0/stylesheets /usr/local/share/gems/gems/compass-0.12.6/frameworks/compass/stylesheets/ ],
+          :load_paths => self.get_load_paths,
           :cache => true,
           :cache_location => './.sass-cache',
           :syntax => :sass,
