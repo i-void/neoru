@@ -4,7 +4,7 @@ require 'pathname'
 
 class Neo::Asset::File
   # dosya kendi yolunu ve kopya yolunu ayarlar
-  # eğer dosyanın kopyası yoksa veya orjinalde değiştirilmişse yenisini kopyalar
+  #   eğer dosyanın kopyası yoksa veya orjinalde değiştirilmişse yenisini kopyalar
   # @path: dosya yolu
   # @type: dosya tipi (css, js)
   # @virt_path: dosyanın kopyalanacağı yol
