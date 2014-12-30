@@ -50,4 +50,18 @@ class Hash
   def to_query
     URI.escape(self.collect{|k,v| "#{k}=#{v}"}.join('&'))
   end
+
+  def symbolize_keys
+    self.inject({}){|result, (key, value)|
+        key = key.to_sym if key.class == String
+        value.symbolize_keys! if value.class == Hash
+        result[key] = value
+        result
+      }
+  end
+
+  def symbolize_keys!
+    replace self.symbolize_keys
+  end
+
 end

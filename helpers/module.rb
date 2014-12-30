@@ -7,7 +7,7 @@ class Module
   def const_missing(e)
 
     full_name = self.name+'::'+e.to_s
-    print(full_name) if Neo.conf and Neo.conf[:env] == 'dev'
+    print(full_name) if Neo::Config and Neo::Config[:env] == 'dev'
     module_dir = Neo.app_dir + '/modules/'
 
     # trying to add top level
@@ -16,15 +16,15 @@ class Module
       # if it has a main class named as folder we must init that file
       main_class_file = file_path+'/'+e.to_s.underscore+'.rb'
       if File.file?(main_class_file)
-        puts(' --> init as main') if Neo.conf and Neo.conf[:env] == 'dev'
+        Neo.log ' --> init as main', true
         require main_class_file
-        puts("returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name} \n\n") if Neo.conf and Neo.conf[:env] == 'dev'
+        Neo.log "returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name} \n\n\n"
         const_get(e.to_s)
       else
         # it is a folder so we can instantiate it as a new module
-        puts(' --> inited') if Neo.conf and Neo.conf[:env] == 'dev'
+        Neo.log ' --> inited', true
         self.const_set(e, Module.new)
-        puts("returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name} \n\n") if Neo.conf and Neo.conf[:env] == 'dev'
+        Neo.log "returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name} \n\n\n"
         const_get(e.to_s)
       end
     else
@@ -43,22 +43,22 @@ class Module
       if File.exist?(file_path) or File.exist?(file_path + '.rb')
         if File.file?(file_path + '.rb')
           # it is a file so we can require it
-          puts(" --> loaded #{file_path}") if Neo.conf and Neo.conf[:env] == 'dev'
+          Neo.log " --> loaded #{file_path}\n"
           require file_path
-          puts("returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name}: ##{file_path} \n\n") if Neo.conf and Neo.conf[:env] == 'dev'
+          Neo.log "returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name}: ##{file_path} \n\n\n"
           const_get(e.to_s)
         else
           # if it has a main class named as folder we must init that file
           main_class_file = file_path+'/'+e.to_s.underscore+'.rb'
           if File.file?(main_class_file)
-            puts(' --> main loaded') if Neo.conf and Neo.conf[:env] == 'dev'
+            Neo.log ' --> main loaded', true
             require main_class_file
           else
             # it is a folder so we can instantiate it as a new module
-            puts(' --> inited') if Neo.conf and Neo.conf[:env] == 'dev'
+            Neo.log ' --> inited', true
             self.const_set(e, Module.new)
           end
-          puts("returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name} \n\n") if Neo.conf and Neo.conf[:env] == 'dev'
+          Neo.log "returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name} \n\n\n"
           const_get(e.to_s)
         end
       else
@@ -66,13 +66,13 @@ class Module
         path_parts = self.name.split('::')
         if path_parts.length > 1
           path_parts = path_parts[0..-2] << e.to_s
-          puts(' --> searching') if Neo.conf and Neo.conf[:env] == 'dev'
+          Neo.log ' --> searching', true
           path_parts.reduce(Object) {|memo,part| memo.const_get part }
         elsif path_parts.length == 1
-          puts(' --> searching') if Neo.conf and Neo.conf[:env] == 'dev'
+          Neo.log ' --> searching', true
           Object.const_get(e.to_s)
         else
-          puts(' --> searching') if Neo.conf and Neo.conf[:env] == 'dev'
+          Neo.log ' --> searching', true
           old_const_missing(e)
         end
       end

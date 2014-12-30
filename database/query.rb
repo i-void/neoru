@@ -106,11 +106,9 @@ module Neo
       def run
         build
 
-        if @parameters['params'].nil?
-          pp @parameters[:query] if Neo.conf and Neo.conf[:env] == 'dev'
-        else
-          pp @parameters[:query] + ' --> ' +@parameters['params'].to_s if Neo.conf and Neo.conf[:env] == 'dev'
-        end
+        Neo.log @parameters[:query]
+        Neo.log " --> #{@parameters['params']}" if @parameters['params']
+        Neo.log "\n"
 
         begin
           RestClient.post( 'http://'+@uri+'/'+@command,

@@ -1,12 +1,15 @@
 require 'pp'
 require 'rack'
-require "#{File.dirname(__FILE__)}/module_extend"
+NEO_PATH = File.dirname(__FILE__)
+require "#{NEO_PATH}/module_extend"
 
 module Neo
-	attr_accessor :app_dir, :dir, :server_vars, :req, :mail, :conf
+	attr_accessor :app_dir, :dir, :server_vars, :req, :mail
 
   def run
     Dir[@dir+'/helpers/*'].each { |f| require f }
+    require "#{NEO_PATH}/params"
+    require "#{NEO_PATH}/config"
     @server_vars ||= {}
     @req = Rack::Request.new(@server_vars)
 
@@ -39,6 +42,12 @@ module Neo
     url = Neo::Config[:routes][name][0]
     parameters.reduce(url) do |retval, i|
       "#{retval}/#{i}"
+    end
+  end
+
+  def log(message, newline=false)
+    if Neo::Config and Neo::Config[:env] == 'dev'
+      (newline) ? puts(message) : print(message)
     end
   end
 
