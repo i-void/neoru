@@ -5,7 +5,7 @@ require 'pp'
 module Neo
   module Database
     class Query
-      attr_accessor :command,:return,:parameters,:param_uid,:limit,:where_depth
+      attr_accessor :command,:return,:delete,:parameters,:param_uid,:limit,:where_depth
       def initialize(command='')
 
         phrase_struct = Struct.new(:select,:match,:update,:label,:create,:where,:set,:order)
@@ -243,6 +243,11 @@ module Neo
         self
       end
 
+      def set_delete(delete_str)
+        @delete = delete_str
+        self
+      end
+
       def add_where(params, operator='AND', depth=0)
         prefix = ''
         if depth < @where_depth
@@ -297,6 +302,9 @@ module Neo
         end
         unless @phrase.set.blank?
           @parameters[:query] += @phrase.set.join(' ')+' '
+        end
+        unless @delete.blank?
+          @parameters[:query] += 'DELETE '+@delete+' '
         end
         unless @return.blank?
           @parameters[:query] += 'RETURN '+@return+' '

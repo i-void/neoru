@@ -20,6 +20,13 @@ class Neo::Database::ModelQuery < Neo::Database::Cypher
     fill_model(@model)
   end
 
+  def delete(relations=false)
+    delete_string = 'n'
+    delete_string += ",#{relations}" if relations
+    set_delete(delete_string)
+    count
+  end
+
   def filter_by_id(id)
     self.add_where([%w(id = {id})]).add_parameters(id: id)
   end
