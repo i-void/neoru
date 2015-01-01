@@ -110,11 +110,15 @@ module Neo
         Neo.log " --> #{@parameters['params']}" if @parameters['params']
         Neo.log "\n"
 
+        require 'base64'
+        token = '725a2651b5c0244f237ace48f8eec946'
+
         begin
           RestClient.post( 'http://'+@uri+'/'+@command,
                            @parameters.to_json,
                            :content_type => :json,
-                           :accept => :json
+                           :accept => :json,
+                           :authorization => "Basic realm=\"Neo4j\" #{Base64.encode64 ":#{token}"}"
           ) { |response, request, result, &block|
             case response.code
               when 200
@@ -146,7 +150,7 @@ module Neo
       def add_match(node_sign,labels='',properties='',suffix='')
         labels = [labels] unless labels.kind_of?(Array)
         if labels.length>0
-					labels.unshift Neo::Config[:db][:name] unless labels.include? Neo::Config[:db][:name]
+					labels << Neo::Config[:db][:name] unless labels.include? Neo::Config[:db][:name]
           labels = ":#{labels.join(':')}"
         else
           labels = ''
@@ -188,7 +192,7 @@ module Neo
       def add_create(node_sign,labels='',properties='',suffix='')
         labels = [labels] unless labels.kind_of?(Array)
         if labels.length>0
-	        labels.unshift Neo::Config[:db][:name] unless labels.include? Neo::Config[:db][:name]
+	        labels << Neo::Config[:db][:name] unless labels.include? Neo::Config[:db][:name]
 	        labels = ":#{labels.join(':')}"
         else
           labels = ''

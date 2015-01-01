@@ -69,10 +69,8 @@ class Module
           Neo.log ' --> searching', true
           path_parts.reduce(Object) {|memo,part| memo.const_get part }
         elsif path_parts.length == 1
-          Neo.log ' --> searching', true
           Object.const_get(e.to_s)
         else
-          Neo.log ' --> searching', true
           old_const_missing(e)
         end
       end
