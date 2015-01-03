@@ -22,6 +22,7 @@ class Neo::Database::Transaction
 				yield
 			rescue Exception => e
 				TransactionHandler.rollback
+				puts e.backtrace
 				e.raise
 			else
 				TransactionHandler.commit
