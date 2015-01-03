@@ -5,18 +5,13 @@ require 'pp'
 module Neo
   module Database
     class Query
+
       attr_accessor :command,:return,:delete,:parameters,:param_uid,:limit,:where_depth
       def initialize(command='')
 
         phrase_struct = Struct.new(:select,:match,:update,:label,:create,:where,:set,:order)
         @phrase = phrase_struct.new([],[],[],[],[],[],[],[])
 
-        if Neo::Config[:db][:host].blank?
-          @uri = '127.0.0.1'
-        else
-          @uri = Neo::Config[:db][:host]
-        end
-        @uri +=  ':' + Neo::Config[:db][:port].to_s
         @command = command
         @where_depth = 0
         @param_uid = 0
@@ -24,19 +19,17 @@ module Neo
       end
 
 
+
+
       def get_all
         result = run
         modified_result = []
         unless result['data'].blank?
           result['data'].each do |row|
+            row = row['row']
             modified_row = []
             row.each do |cell|
-              return nil if cell.nil?
-              if cell.kind_of?(String) or cell.kind_of?(Fixnum)
-                modified_row << cell
-              else
-                modified_row << cell['data']
-              end
+              modified_row << cell
             end
             modified_result << modified_row
           end
@@ -45,93 +38,27 @@ module Neo
       end
 
       def get
-        result = run
-        modified_result = []
-        unless result['data'].blank?
-          if result['data'].length == 1
-            row = result['data'][0]
-            if row.length == 1
-              if row[0].kind_of?(String) or row[0].kind_of?(Fixnum)
-                row[0]
-              else
-                (row[0].nil?) ? nil : row[0]['data']
-              end
-            else
-              row.each do |cell|
-                if cell.kind_of?(String) or cell.kind_of?(Fixnum)
-                  modified_result << cell
-                else
-                  if cell.nil?
-                    modified_result << nil
-                  else
-                    modified_result << cell['data']
-                  end
-                end
-              end
-              return modified_result
-            end
-          else
-            result['data'].each do |row|
-              if row.length ==1
-                if row[0].kind_of?(String) or row[0].kind_of?(Fixnum)
-                  modified_result << row[0]
-                else
-                  if row[0].nil?
-                    modified_result << nil
-                  else
-                    modified_result << row[0]['data']
-                  end
-                end
-              else
-                modified_row = []
-                row.each do |cell|
-                  if cell.kind_of?(String) or cell.kind_of?(Fixnum)
-                    modified_row << cell
-                  else
-                    if cell.nil?
-                      modified_row << nil
-                    else
-                      modified_row << cell['data']
-                    end
-                  end
-                end
-                modified_result << modified_row
-              end
-            end
-            return modified_result
-          end
+        result = get_all
+        2.times do
+          result = result[0] if result.kind_of?(Array) && result.length == 1
         end
+        result
       end
 
-      def run
-        build
-
+      def log_query
         Neo.log @parameters[:query]
         Neo.log " --> #{@parameters['params']}" if @parameters['params']
         Neo.log "\n"
+      end
 
-        require 'base64'
-        token = '725a2651b5c0244f237ace48f8eec946'
-
-        begin
-          RestClient.post( 'http://'+@uri+'/'+@command,
-                           @parameters.to_json,
-                           :content_type => :json,
-                           :accept => :json,
-                           :authorization => "Basic realm=\"Neo4j\" #{Base64.encode64 ":#{token}"}"
-          ) { |response, request, result, &block|
-            case response.code
-              when 200
-                return JSON.parse(response)
-              when 400
-                resp = JSON.parse(response)
-                return Neo::Exceptions::DatabaseError.new(
-                  resp['exception'] + ' | ' + resp['message']
-                ).raise
-              else
-                return nil
-            end
-          }
+      def run
+        statement = build
+        log_query
+        transaction = TransactionHandler.current
+        if transaction
+          transaction.execute_statements([statement])[0]
+        else
+          TransactionHandler.commit_statements([statement])[0]
         end
       end
 
@@ -175,10 +102,10 @@ module Neo
         result = run
         model_arr = []
         methods = model.new.methods
-        unless result.nil?
+        unless result['data'].blank?
           result['data'].each do |row|
             new_model = model.new
-            row[0]['data'].each do |k,v|
+            row['row'][0].each do |k,v|
               if methods.include?((k+'=').to_sym)
                 new_model.send(k+'=',v)
               end
@@ -319,7 +246,11 @@ module Neo
         unless @limit.blank?
           @parameters[:query] += 'LIMIT '+@limit.to_s+' '
         end
-        @parameters['query']
+        statement = {
+          statement: @parameters[:query],
+        }
+        statement[:parameters] = @parameters['params'] if @parameters['params']
+        statement
       end
     end
   end

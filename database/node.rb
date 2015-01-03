@@ -83,7 +83,7 @@ class Neo::Database::Node
     cypher.set_return('n.id')
     result = cypher.run
     if result['data'].length>0
-      id  = result['data'][0][0].to_s
+      id  = result['data'][0]['row'][0].to_s
       id = id.to_i(36)+1
       id.to_s(36)
     else
