@@ -14,7 +14,7 @@ module Neo
     @req = Rack::Request.new(@server_vars)
 
     Neo::Router.build_module_data
-    Neo::Event.register(:before_action) {
+    Neo::Event.register(:before_action, :init_asset_manager) {
       Neo::Asset::Manager.init
     }
     @mail = Neo::Mail.new

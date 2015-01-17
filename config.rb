@@ -18,17 +18,32 @@ module App
   end
 end
 
+class Neo::ConfigFiles
+  @config_files =
+    %W(#{Neo.app_dir}/config/*.rb #{Neo.app_dir}/modules/*/config/*.rb).reduce([]) {|memo, dir|
+      Dir[dir].each do |file|
+        memo << file
+      end
+      memo
+    }
+  def self.get
+    @config_files
+  end
+  def self.remove(file)
+    @config_files.delete_if {|conf_file| file == conf_file}
+  end
+end
+
 
 module Neo
   module Config
     attr_accessor :main
 
     def initialize
-      config_directories = %W(#{Neo.app_dir}/config/*.rb #{Neo.app_dir}/modules/*/config/*.rb)
-      config_directories.each do |dir|
-        Dir[dir].each do |file|
+      config_files = Neo::ConfigFiles.get
+      config_files.each do |file|
           require file
-        end
+          Neo::ConfigFiles.remove file
       end
 
       env_var = App::Conf.default[:env]
