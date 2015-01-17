@@ -7,8 +7,7 @@ module Neo
         content = Neo::View.new.render(params)
         Neo::Response.html(content)
       else
-        view_html =  Neo::View.new.render(params)
-        params[:content] = view_html
+        params[:content] =  Neo::View.new.render(params)
         content = Neo::View.new(@layout).render(params)
         Neo::Response.html(content)
       end
