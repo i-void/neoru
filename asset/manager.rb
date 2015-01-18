@@ -18,6 +18,9 @@ class Neo::Asset::Manager
         }
       }
 
+      module_asset_dir = "#{Neo.app_dir}/modules/#{Neo::Params.module}/assets"
+      Neo::Asset::Parsers::Opal.new_environment(module_asset_dir)
+
       @changed_files = []
       @media_dir = Neo.app_dir + '/web/' + @media_dir_name
       @module_dir = Neo.app_dir + '/modules/' + Neo::Params.module + '/assets'
@@ -27,6 +30,7 @@ class Neo::Asset::Manager
       links = to_html(self.send("get_#{Neo::Params.env}_links"))
       @css = links[:css]
       @js = links[:js]
+
     end
 
     # seperate the css and js files and give their html code
