@@ -9,10 +9,14 @@ class Module
     full_name = self.name+'::'+e.to_s
     print(full_name) if Neo::Config and Neo::Config[:env] == 'dev'
     module_dir = Neo.app_dir + '/modules/'
+    rubymine_mapper = ''
+    if $mapper
+      rubymine_mapper = File.open("#{Neo.app_dir}/rubymine_mapper.rb", 'a')
+    end
 
     # trying to add top level
     if self.name == 'Object'
-      file_path = module_dir + full_name.underscore
+      file_path = module_dir + e.to_s.underscore
       # if it has a main class named as folder we must init that file
       main_class_file = file_path+'/'+e.to_s.underscore+'.rb'
       if File.file?(main_class_file)
@@ -20,12 +24,18 @@ class Module
         require main_class_file
         Neo.log "returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name} \n\n\n"
         const_get(e.to_s)
-      else
+      elsif File.directory? file_path
         # it is a folder so we can instantiate it as a new module
         Neo.log ' --> inited', true
         self.const_set(e, Module.new)
         Neo.log "returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name} \n\n\n"
+        if $mapper
+          rubymine_mapper.write("module #{const_get(e.to_s).name}; end \n")
+          rubymine_mapper.close
+        end
         const_get(e.to_s)
+      else
+        LoadError.new("Not Found: #{full_name}").raise
       end
     else
       if self.name.start_with? 'Neo'
@@ -57,6 +67,10 @@ class Module
             # it is a folder so we can instantiate it as a new module
             Neo.log ' --> inited', true
             self.const_set(e, Module.new)
+            if $mapper
+              rubymine_mapper.write("module #{const_get(e.to_s).name}; end \n")
+              rubymine_mapper.close
+            end
           end
           Neo.log "returning #{const_get(e.to_s).name}: #{const_get(e.to_s).class.name} \n\n\n"
           const_get(e.to_s)
