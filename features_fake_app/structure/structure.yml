@@ -1,0 +1,20 @@
+Auth:
+  Identity:
+    HasProperties:
+      - username
+      - password
+      - email
+
+  Role:
+    HasProperties:
+      - name
+
+User:
+  Member:
+    HasProperties:
+      - last_visit
+      - ip
+    HasMany:
+      Role: { Auth: Role }
+    HasOne:
+      Identity: { Auth: Identity }
