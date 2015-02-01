@@ -14,14 +14,20 @@ class Neo::Commands::ModelGenerator::AModule
 	end
 
 	def generate_models
-		@models.each do |name, data|
+		@models.reduce({}) do |memo, (name, data)|
 			model_obj = AModel.new @name, name, data
 			model_obj.make_file @path
 			model_obj.generate
 
+			memo.deep_merge model_obj.reversed_relations
+		end
+	end
+
+	def generate_model_queries(reversed_relations)
+		@models.each do |name, data|
 			query_obj = AModelQuery.new @name, name, data
 			query_obj.make_file @path
-			query_obj.generate
+			query_obj.generate(reversed_relations)
 		end
 	end
 end

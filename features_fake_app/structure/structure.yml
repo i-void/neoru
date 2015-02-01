@@ -15,6 +15,7 @@ User:
       - last_visit
       - ip
     HasMany:
+      Friend: Member
       Role: { Auth: Role }
     HasOne:
       Identity: { Auth: Identity }
