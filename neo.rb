@@ -55,14 +55,9 @@ module Neo
   # @param gem_name [String] name of gem which will be detected
   # @return [String, Nil] path of gem if exists, Nil otherwise
   def detect_gem_path(gem_name)
-    require 'open3'
-    out, status = Open3.capture2e 'rvm @global do gem environment gemdir'
-    if status.success?
-      dirs = Dir["#{out.split("\n").last.strip}/gems/#{gem_name}-[0-9]*.*.*"]
-      unless dirs.blank?
-        dirs[0]
-      end
-    end
+	  Gem::Specification.find_by_name(gem_name).gem_dir
+  rescue
+	  nil
   end
 
   make_modular

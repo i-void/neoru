@@ -9,7 +9,7 @@ Feature: Parsers
   Examples:
     | parser_class  | test_file               | result_file         |
     | Coffee        | coffee/testfile.coffee  | coffee/testfile.js  |
-    | Opal          | opal/testfile.rb        | opal/testfile.js    |
+    | Opal          | js/testfile.rb          | opal/testfile.js    |
     | Sass          | sass/testfile.sass      | sass/testfile.css   |
     | Scss          | scss/testfile.scss      | scss/testfile.css   |
 

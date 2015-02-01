@@ -18,7 +18,7 @@ class Neo::Asset::Parsers::Opal
 	#   * :content   => the parsed content
 	#   * :extension => converting type of the file
 	def self.parse(file)
-		file = File.realdirpath(file).gsub /^#{@asset_folder}\//, ''
+		#file = File.realdirpath(file).gsub /^#{@asset_folder}\//, ''
 		content = @env[file].to_s
 		{content: content, extension: '.js'}
 	end

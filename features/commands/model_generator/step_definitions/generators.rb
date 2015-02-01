@@ -1,7 +1,7 @@
 Given(/^Clear the fake model directory except (.*)$/) do |structure_file|
 	require 'fileutils'
-	@structure_dir = "#{Neo.app_dir}/structure"
-	Pathname.new(@structure_dir).children.each do |path|
+	@structure_dir = "#{Neo.app_dir}/structure/generator"
+	Pathname.new(@structure_dir).each_child do |path|
 		path.rmtree unless path.to_s.end_with?(structure_file)
 	end
 	expect(Dir["#{@structure_dir}/**"]).to eq(["#{@structure_dir}/#{structure_file}"])
@@ -45,5 +45,14 @@ Then(/^Model files must be created$/) do
 end
 
 Then(/^Model files must be same with prepared content$/) do
-	pending
+	expected_path = Pathname.new File.join(@structure_dir, '..', 'expected_output')
+	result_path = Pathname.new @structure_dir
+	expected_path.each_child_recursively do |path|
+		if path.file?
+			expected_file = path.to_s
+			relative_path = path.relative_path_from expected_path
+			result_file = File.join result_path.to_s, relative_path.to_s
+			expect(FileUtils.identical? expected_file, result_file).to be true
+		end
+	end
 end

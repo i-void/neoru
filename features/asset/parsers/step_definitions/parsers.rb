@@ -12,6 +12,11 @@ end
 
 Then(/^Parse with (.*)$/) do |parser_class|
   parser_class = Neo::Asset::Parsers.const_get parser_class
+  if parser_class == Neo::Asset::Parsers::Opal
+	  asset_dir = "#{Neo.dir}/features_fake_app/modules/main/assets"
+	  parser_class.new_environment asset_dir
+	  @test_file_path.gsub! "#{@dir}/", ''
+  end
   @parsed_content = parser_class.parse(@test_file_path)
 end
 

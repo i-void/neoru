@@ -32,7 +32,11 @@ class Neo::View
   end
 
   def render(params)
-    renderer = get_renderer { Tilt.new(@path,default_encoding: 'UTF-8') }
+	  options = {default_encoding: 'UTF-8'}
+	  if Neo::Config[:env] == 'dev' and File.extname(@path) == '.slim'
+		  options[:pretty] = true
+	  end
+    renderer = get_renderer { Tilt.new(@path,options) }
     renderer.render Object.new, params
   end
 
