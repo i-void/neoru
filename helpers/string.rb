@@ -1,4 +1,4 @@
-#require 'digest'
+require 'digest'
 
 class String
   def camelize

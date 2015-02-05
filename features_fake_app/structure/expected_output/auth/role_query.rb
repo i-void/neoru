@@ -1,4 +1,4 @@
-class Auth::Models::RoleQuery < Neo::Database::Model
+class Auth::Models::RoleQuery < Neo::Database::ModelQuery
 
   def by_name(name)
     self.add_where([%w[name = {name}]]).add_parameters name: name

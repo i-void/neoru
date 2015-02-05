@@ -1,4 +1,4 @@
-class Auth::Models::IdentityQuery < Neo::Database::Model
+class Auth::Models::IdentityQuery < Neo::Database::ModelQuery
 
   def by_username(username)
     self.add_where([%w[username = {username}]]).add_parameters username: username

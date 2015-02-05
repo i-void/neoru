@@ -13,7 +13,7 @@ class Neo::Commands::ModelGenerator::AModelQuery
 	end
 
 	def write_class(reversed_relations)
-		@file.puts "class #{@module}::Models::#{@name}Query < Neo::Database::Model"
+		@file.puts "class #{@module}::Models::#{@name}Query < Neo::Database::ModelQuery"
 		write_property_queries
 		write_relation_queries reversed_relations
 		@file.puts 'end'

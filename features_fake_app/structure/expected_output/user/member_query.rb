@@ -1,4 +1,4 @@
-class User::Models::MemberQuery < Neo::Database::Model
+class User::Models::MemberQuery < Neo::Database::ModelQuery
 
   def by_last_visit(last_visit)
     self.add_where([%w[last_visit = {last_visit}]]).add_parameters last_visit: last_visit
