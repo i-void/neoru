@@ -8,10 +8,11 @@ module Neo
 
   def run
     Dir[@dir+'/helpers/*'].each { |f| require f }
-    require "#{NEO_PATH}/params"
-    require "#{NEO_PATH}/config"
     @server_vars ||= {}
     @req = Rack::Request.new(@server_vars)
+    require "#{NEO_PATH}/params"
+    require "#{NEO_PATH}/config"
+
 
     Neo::Router.build_module_data
     Neo::Event.register(:before_action, :init_asset_manager) {

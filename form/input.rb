@@ -20,7 +20,7 @@ class Neo::Form::Input
     end unless @validations.nil?
   end
 
-  def valid? form_data
+  def valid?(form_data)
     @errors = []
     # validationların hepsinin true dönmesi durumunda true getir
     if @validations.nil?
