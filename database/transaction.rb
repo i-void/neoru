@@ -11,7 +11,7 @@ class Neo::Database::Transaction
 	def initialize(host, port='7474')
 		@host = host
 		@port = port
-		@encoded_key = Base64.encode64 ":#{Neo::Config[:db][:auth_key]}"
+		@encoded_key = Base64.encode64 "#{Neo::Config[:db][:username]}:#{Neo::Config[:db][:password]}"
 		@location = @statements = nil
 	end
 

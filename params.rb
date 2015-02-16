@@ -15,16 +15,22 @@ class Neo::Params
 	class Session
 		extend Hashable
 		@hash_store = Neo.req.session
+  rescue
+    @hash_store = nil
 	end
 
 	class Post
 		extend Hashable
 		@hash_store = Neo.req.POST
+  rescue
+    @hash_store = nil
 	end
 
 	class Get
 		extend Hashable
 		@hash_store = Neo.req.GET
+  rescue
+    @hash_store = nil
 	end
 	
 	# class File

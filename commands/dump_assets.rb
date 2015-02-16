@@ -7,6 +7,24 @@ require 'sass'
 
 class Neo::Commands::DumpAssets < Neo::Command
 
+  def get_compressed_css(files)
+    content = files.reduce('') {|memo, css_file|
+      content = File.read(css_file)
+      content = css_relative_to_absolute(content, css_file)
+      "#{memo}\n#{content}"
+    }
+    engine = Sass::Engine.new(content, :syntax => :scss, :style => :compressed)
+    engine.render
+  end
+
+  def css_relative_to_absolute(content, path)
+    root_path = Pathname Neo::Asset::Manager.media_dir
+    path = Pathname(File.dirname(path)).relative_path_from(root_path)
+    urls = content.scan(/url\(["']*(?<url>.+?)["']*\)/i).map{|i| i[0]}
+    urls.reduce(content) do |memo, url|
+      memo.gsub url, "#{path.join(url)}"
+    end
+  end
 
   def process_asset(asset)
     Neo::Params.module, Neo::Params.controller, Neo::Params.action = asset[:action].split ':'
@@ -24,8 +42,16 @@ class Neo::Commands::DumpAssets < Neo::Command
     links[:css] = [] if links[:css].nil?
     links[:js] = [] if links[:js].nil?
 
-    result = `juicer merge -o "#{output_file_name}.min.css" -d "#{Neo::Asset::Manager.media_dir}" -r "#{links[:css].join('" "')}" -f`
-    puts result
+    # result = `juicer merge -o "#{output_file_name}.min.css" -d "#{Neo::Asset::Manager.media_dir}" -r "#{links[:css].join('" "')}" -f`
+    # puts result
+
+    File.open("#{output_file_name}.min.css", 'w') do |file|
+      file.write get_compressed_css(links[:css])
+      puts "Produced #{output_file_name}.min.css from"
+      puts links[:css]
+      puts ''
+    end
+
 
     result = `juicer merge -s -o "#{output_file_name}.min.js" -d "#{Neo::Asset::Manager.media_dir}" -r "#{links[:js].join('" "')}" -f`
     puts result
