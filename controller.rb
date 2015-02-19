@@ -2,6 +2,7 @@ module Neo
   class Controller
     attr_accessor :renderer,:layout
 
+
     def render(params={})
       if @layout.blank?
         content = Neo::View.new.render(params)
@@ -16,6 +17,7 @@ module Neo
     def redirect(url)
       Neo::Response.redirect url
     end
+    alias :redirect_to :redirect
 
     def path(name, parameters=[])
 	    Neo.generate_url name, parameters

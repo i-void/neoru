@@ -29,5 +29,12 @@ class Neo::Commands::ModelGenerator::AModule
 			query_obj.make_file @path
 			query_obj.generate(reversed_relations)
 		end
-	end
+  end
+
+  def get_schema
+    @models.reduce('') do |memo, (name, data)|
+      schema_obj = ASchema.new @name, name, data
+      memo + schema_obj.generate
+    end
+  end
 end

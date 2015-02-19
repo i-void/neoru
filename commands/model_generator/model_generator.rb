@@ -5,6 +5,7 @@ class Neo::Commands::ModelGenerator
 
 	def initialize(path)
 		@path = path
+    @schema_file = File.open File.join(File.dirname(path), 'schema.txt'), 'w'
 		read_configuration
 	end
 
@@ -20,11 +21,16 @@ class Neo::Commands::ModelGenerator
 			reversed_relations.deep_merge! module_obj.generate_models
 			module_objs << module_obj
 		end
+    'CREATE INDEX ON :User(last_action);'
+    @schema_file.write "CREATE INDEX ON :#{Neo::Config[:db][:name]}(id);"
+    @schema_file.write "\nCREATE CONSTRAINT ON (n:Neo4jUniqueId) ASSERT n.id IS UNIQUE;\n"
 
 		module_objs.each do |module_obj|
 			module_obj.generate_model_queries reversed_relations
-		end
-	end
+      @schema_file.write module_obj.get_schema
+    end
+    @schema_file.close
+  end
 
 
 

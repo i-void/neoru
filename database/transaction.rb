@@ -20,9 +20,13 @@ class Neo::Database::Transaction
 		if block_given?
 			begin
 				yield
-			rescue Exception => e
-				TransactionHandler.rollback
-				puts e.backtrace
+      rescue Exception => e
+        begin
+				  TransactionHandler.rollback
+        rescue Exception => rollback_error
+          puts 'Transaction cannot be rollbacked: '
+          puts rollback_error
+        end
 				e.raise
 			else
 				TransactionHandler.commit
@@ -56,7 +60,7 @@ class Neo::Database::Transaction
 		self.rollback if rollback
 		response_json = JSON.parse response
 		errors = response_json['errors'].map {|error|
-			"Code: #{error.code}, Error: #{error.message}"
+			"Code: #{error['code']}, Error: #{error['message']}"
 		}
 		Neo::Exceptions::DatabaseError.new(
 			errors.join "\n"
@@ -101,7 +105,11 @@ class Neo::Database::Transaction
 		can_execute?
 		response = RestClient.post @location, parameters, headers
 		if response.code == 200
-			JSON.parse(response)['results']
+      if JSON.parse(response)['errors'].length > 0
+        handle_errors response, false
+      else
+        JSON.parse(response)['results']
+      end
 		else
 			handle_errors response
 		end

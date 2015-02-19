@@ -9,7 +9,10 @@ class Neo::Params
 		end
 		def []=(var, value)
 			@hash_store[var] = value
-		end
+    end
+    def delete(key)
+      @hash_store.delete key
+    end
 	end
 
 	class Session

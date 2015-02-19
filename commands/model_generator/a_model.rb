@@ -4,7 +4,7 @@ class Neo::Commands::ModelGenerator::AModel
 	def initialize(module_name, name, data)
 		@module = module_name
 		@name = name.to_s
-		@properties = data[:HasProperties]
+		@properties = data[:HasProperties].map{|property| property.gsub(/^[\+\/]/, '')}
 		@has_many = data[:HasMany] || {}
 		@has_one = data[:HasOne] || {}
 		@reversed_relations = {}
