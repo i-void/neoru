@@ -42,15 +42,25 @@ class Neo::Database::Node
     cypher.run
   end
 
-  def relate_to(node,relation_name,relation_props={})
+  def relation_matcher(node,relation_name,relation_props={})
     cypher = Cypher.new.add_match('n',@labels,{:id=>@id}).add_match('m',node.labels,{:id=>node.id})
-    rel_params = ''
-    rel_params = ' {rel_params}' unless relation_props.blank?
+    rel_params = (relation_props.blank? ? '' : ' {rel_params}')
     cypher.add_create('n',[],'',"-[r:#{relation_name}#{rel_params}]->(m)")
     unless relation_props.blank?
       cypher.add_parameters(:rel_params=>relation_props)
     end
+    cypher
+  end
+
+  def relate_to(node,relation_name,relation_props={})
+    cypher = relation_matcher node, relation_name, relation_props
     cypher.set_return('r')
+    cypher.run
+  end
+
+  def unrelate_to(node,relation_name,relation_props={})
+    cypher = relation_matcher node, relation_name, relation_props
+    cypher.set_delete('r')
     cypher.run
   end
 

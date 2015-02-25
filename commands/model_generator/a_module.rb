@@ -1,9 +1,12 @@
 require 'fileutils'
 
 class Neo::Commands::ModelGenerator::AModule
+  attr_reader :model_objs
+
 	def initialize(path, name, models)
 		@name = name.to_s
 		@models = models
+    @model_objs = @models.map {|model_name, data| AModel.new @name, model_name, data }
 		@path = File.join File.dirname(path), @name.underscore
 		make_directory
 	end
@@ -14,14 +17,20 @@ class Neo::Commands::ModelGenerator::AModule
 	end
 
 	def generate_models
-		@models.reduce({}) do |memo, (name, data)|
-			model_obj = AModel.new @name, name, data
+    @model_objs.reduce({}) do |memo, model_obj|
 			model_obj.make_file @path
 			model_obj.generate
 
 			memo.deep_merge model_obj.reversed_relations
 		end
 	end
+
+  def generate_reversed_many_relations(module_objs)
+    @model_objs.each do |model_obj|
+      model_obj.append_to_file @path
+      model_obj.generate_reversed_many_relations module_objs
+    end
+  end
 
 	def generate_model_queries(reversed_relations)
 		@models.each do |name, data|

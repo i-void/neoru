@@ -15,15 +15,16 @@ class Neo::Commands::ModelGenerator
 
 	def generate
 		reversed_relations = {}
-		module_objs = []
+		module_objs = {}
 		@modules.each do |name, models|
 			module_obj = AModule.new @path, name, models
 			reversed_relations.deep_merge! module_obj.generate_models
-			module_objs << module_obj
+			module_objs[name] = module_obj
 		end
 
-		module_objs.each do |module_obj|
+		module_objs.each_value do |module_obj|
 			module_obj.generate_model_queries reversed_relations
+      module_obj.generate_reversed_many_relations module_objs
       @schema_file.write module_obj.get_schema
     end
     @schema_file.write 'CREATE CONSTRAINT ON (n:Neo4jUniqueId) ASSERT n.id IS UNIQUE;'

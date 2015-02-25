@@ -32,12 +32,14 @@ class Neo::Commands::ModelGenerator::AModelQuery
 	def write_relation_queries(reversed_relations)
 		reversed_relations[@module.to_sym].each do |model, relations|
 			if model == @name
-				relations.each do |relation, to_model|
-					to_model_u = to_model.to_s.underscore
-					@file.puts ''
-					@file.puts "  def #{relation.to_s.underscore}_of_#{to_model_u}(#{to_model_u})"
-					@file.puts "    self.add_match('#{to_model_u}','#{to_model}',{id: #{to_model_u}.id}, '-[r:Has#{relation}]->n')"
-					@file.puts '  end'
+				relations.each do |relation, to_models|
+          to_models.each do |to_model|
+            to_model_u = to_model.to_s.underscore
+            @file.puts ''
+            @file.puts "  def #{relation.to_s.underscore}_of_#{to_model_u}(#{to_model_u})"
+            @file.puts "    self.add_match('#{to_model_u}','#{to_model}',{id: #{to_model_u}.id}, '-[r:Has#{relation}]->n')"
+            @file.puts '  end'
+          end
 				end
 			end
 		end unless reversed_relations[@module.to_sym].blank?
