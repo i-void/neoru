@@ -108,20 +108,17 @@ class Neo::Router
     end
 
     def check_from_config
-      Neo::Config[:routes].reduce(nil) do |ret, (name, data)|
-        data[3]='get' if data[3].blank?
-        route_reg, param_reg, action, method = data
-        param_reg = '/'+param_reg if param_reg[0]!='/'
-        url_reg = route_reg + param_reg
-        uri = Neo.server_vars['REQUEST_PATH']
-        uri += '/' if uri[-1] != '/'
-        request_method = Neo.server_vars['REQUEST_METHOD'].downcase
-        if /^#{url_reg}/.match(uri) && method.split(',').include?(request_method)
-          param_string = uri.gsub /^#{route_reg}/, ''
-          @params = param_string.split('/')[1..-1]
-          break action
-        end
-      end
+			checker = Neo::Router::ConfigurationChecker.new(
+				host: Neo.server_vars['HTTP_HOST'],
+				uri: Neo.server_vars['REQUEST_URI'],
+			  routes: Neo::Config[:routes],
+			  method: Neo.server_vars['REQUEST_METHOD'].downcase.to_sym,
+			)
+			found = checker.check
+			if found
+				@params = checker.collect_params
+				found.to
+			end
     end
 
     def action_call_config(action)

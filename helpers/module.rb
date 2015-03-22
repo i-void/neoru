@@ -6,7 +6,7 @@ class Module
   # my autoloader function
   def const_missing(e)
 
-    full_name = self.name+'::'+e.to_s
+    full_name = "#{self}::#{e}"
     print(full_name) if Neo::Config and Neo::Config[:env] == 'dev'
     module_dir = Neo.app_dir + '/modules/'
     rubymine_mapper = ''
