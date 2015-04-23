@@ -13,8 +13,6 @@ module Neo
     require "#{NEO_PATH}/params"
     require "#{NEO_PATH}/config"
 
-
-    Neo::Router.build_module_data
     Neo::Event.register(:before_action, :init_asset_manager) {
       Neo::Asset::Manager.init
     }
@@ -22,7 +20,10 @@ module Neo
   end
 
   def http_response
-    Neo::Router.response
+	  routes = Neo::Router::ConfigurationParser.new.generate_routes
+    routes += Neo::Router::AutoRouteGenerator.new.generate_routes
+    router = Neo::Router.new request: @req, routes: routes
+	  router.get_http_response
   end
 
   def asset(file)
@@ -30,8 +31,9 @@ module Neo
     root_dir + file
   end
 
-  def trn(phrase, lang=Neo::Config[:lang])
-    Neo::I18N.translate(phrase,lang)
+  def trn(phrase, lang:Neo::Config[:lang], replace:{})
+    translated_phrase = Neo::I18N.translate(phrase,lang)
+		replace.reduce(translated_phrase) {|memo, (key, value)|	memo.gsub key, value }
   end
 
   def widget(name, params={})
@@ -40,10 +42,9 @@ module Neo
   end
 
   def generate_url(name, parameters=[])
-    url = Neo::Config[:routes][name][0]
-    parameters.reduce(url) do |retval, i|
-      "#{retval}/#{i}"
-    end
+		options = Neo::Config[:routes][name]
+	  config = Neo::Router::Configuration.new(name: name, options: options)
+		config.get_url(parameters)
   end
 
   def log(message, newline=false)

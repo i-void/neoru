@@ -9,5 +9,7 @@ Neo::I18N.add 'TrTr', [
   ['You must set field parameter for EqualTo validator','EqualTo validator\'u için field alanı belirtilmemiş'],
   ['Form doesn\'t have a field named: {{field}}','Form böyle bir alan içermiyor: {{field}}'],
   ['Path not found or parameter count not match on {{url}}', 'Böyle bir sayfa bulunamıyor ya da parametre sayısı yanlış: {{url}}'],
-	['csrf mismatch', 'Form görüntülendiğinden beri epey zaman geçmiş. Tekrar göndermeyi deneyin']
+	['csrf mismatch', 'Form görüntülendiğinden beri epey zaman geçmiş. Tekrar göndermeyi deneyin'],
+  ['Route cannot be found with url: #url#', '#url# icin bir yonlendirme bulunamiyor'],
+  ['Route methods must be set in configuration for {{route}}', '{{route}} için yönlendirme metodu (get, post..) ayarlarda belirtilmemiş']
 ]

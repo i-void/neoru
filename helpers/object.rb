@@ -21,4 +21,14 @@ class Object
       not self.blank?
     end
   end
+
+  def instance_value_hash
+	  instance_variables.reduce({}) { |memo,name| memo[name]=instance_variable_get(name); memo }
+  end
+
+  # object comparison by arguments
+	def same_with?(obj)
+		instance_value_hash == obj.instance_value_hash
+	end
+
 end

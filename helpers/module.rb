@@ -78,11 +78,11 @@ class Module
       else
         # try to find the constant from end to beggining of the path
         path_parts = self.name.split('::')
-        if path_parts.length > 1
+        if path_parts.length > 2
           path_parts = path_parts[0..-2] << e.to_s
           Neo.log ' --> searching', true
           path_parts.reduce(Object) {|memo,part| memo.const_get part }
-        elsif path_parts.length == 1
+        elsif path_parts.length == 2
           Object.const_get(e.to_s)
         else
           old_const_missing(e)

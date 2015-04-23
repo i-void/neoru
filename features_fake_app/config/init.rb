@@ -2,5 +2,8 @@ App::Conf.default(
 	env: 'dev',
 	default_module: 'site',
 	lang: 'TrTr',
-	routes: {}
+	routes: {},
+	db: {
+		name: '`>TestDb`'
+	}
 )

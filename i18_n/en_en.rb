@@ -9,5 +9,7 @@ Neo::I18N.add 'EnEn', [
   ['You must set field parameter for EqualTo validator','You must set field parameter for EqualTo validator'],
   ['Form doesn\'t have a field named: {{field}}','Form doesn\'t have a field named: {{field}}'],
 	['Path not found or parameter count not match on {{url}}', 'Path not found or parameter count not match on {{url}}'],
-	['csrf mismatch', 'Too much time passed from form viewed. Please send it again.']
+	['csrf mismatch', 'Too much time passed from form viewed. Please send it again.'],
+  ['Route cannot be found with url: #url#', 'Route cannot be found with url: #url#'],
+  ['Route methods must be set in configuration for {{route}}', 'Route methods must be set in configuration for {{route}}']
 ]

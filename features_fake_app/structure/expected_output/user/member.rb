@@ -21,4 +21,14 @@ class User::Models::Member < Neo::Database::Model
   def get_identity
     IdentityQuery.new.identity_of_member(self).find_one
   end
+
+  def set_identity(identity)
+    prev = get_identity
+    if prev and prev != identity
+      self.unrelate_to identity, 'HasIdentity'
+    end
+    if not prev or prev != identity
+      self.relate_to identity, 'HasIdentity'
+    end
+  end
 end
