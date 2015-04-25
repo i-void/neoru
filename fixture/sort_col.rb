@@ -22,4 +22,8 @@ class Neo::Fixture::SortCol
 		sorter.get_point_of string
 	end
 
+	def set_sort_point_for(string)
+		@model.send(@column+'_seq=',get_point_for(string))
+	end
+
 end

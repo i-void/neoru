@@ -4,6 +4,8 @@ module Neo
       attr_accessor :id
       attr_reader :_excluded_instance_variables
 
+      Node = Neo::Database::Node
+
       def exclude(*vars)
         @_excluded_instance_variables = vars
       end

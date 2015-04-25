@@ -24,7 +24,7 @@ class String
   def to_obj
     parts = self.split '::'
     parts.reduce(Object) do |memo, i|
-      memo.const_get i
+      memo.const_get i, false
     end
   end
 

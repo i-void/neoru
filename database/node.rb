@@ -1,6 +1,8 @@
 class Neo::Database::Node
   attr_accessor :properties,:labels,:id,:model
 
+  Cypher = Neo::Database::Cypher
+
   def initialize
     @labels = [Neo::Config[:db][:name]]
   end
