@@ -18,7 +18,10 @@ class Neo::Router
 		else
 			matching_route = @routes.find {|route| route.match? @request }
 			if matching_route
-				matching_route.execute_action
+				Neo::Event.trigger :before_action
+				response = matching_route.execute_action
+				Neo::Event.trigger :after_action
+				response
 			else
 				error_msg = Neo.trn('Path not found or parameter count not match on {{url}}').gsub '{{url}}', Neo.server_vars['REQUEST_PATH']
 				Neo::Exceptions.new(404, error_msg).raise

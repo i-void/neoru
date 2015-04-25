@@ -18,12 +18,12 @@ class Neo::Asset::Manager
         }
       }
 
-      module_asset_dir = "#{Neo.app_dir}/modules/#{Neo::Params.module}/assets"
+      module_asset_dir = "#{Neo.app_dir}/modules/#{Neo::Params.module.underscore}/assets"
       Neo::Asset::Parsers::Opal.new_environment(module_asset_dir)
 
       @changed_files = []
       @media_dir = Neo.app_dir + '/web/' + @media_dir_name
-      @module_dir = Neo.app_dir + '/modules/' + Neo::Params.module + '/assets'
+      @module_dir = Neo.app_dir + '/modules/' + Neo::Params.module.underscore + '/assets'
       @version_file = @media_dir + '/.version'
       @last_version = File.read(@version_file)
       copy_assets if @last_version.blank? or Neo::Params.env == 'dev'
@@ -67,13 +67,13 @@ class Neo::Asset::Manager
 
     def get_prod_links
       links = []
-      full_action_path = Neo::Params.module + ':' + Neo::Params.controller + ':' + Neo::Params.action
+      full_action_path = Neo::Params.module.underscore + ':' + Neo::Params.controller.underscore + ':' + Neo::Params.action
 
       output_file_name = '/' + Digest::MD5
       .hexdigest(full_action_path + @last_version)[-10..-1]
       .to_i(16).to_s(36)
 
-      @media_dir += '/' + Neo::Params.module + '/' + @last_version
+      @media_dir += '/' + Neo::Params.module.underscore + '/' + @last_version
       links << output_file_name + '.min.css'
       links << output_file_name + '.min.js'
       links
@@ -82,7 +82,7 @@ class Neo::Asset::Manager
     # get links for css and js files which set on config file
     def get_dev_links
       links = []
-      full_action_path = Neo::Params.module + ':' + Neo::Params.controller + ':' + Neo::Params.action
+      full_action_path = Neo::Params.module.underscore + ':' + Neo::Params.controller.underscore + ':' + Neo::Params.action
       unless Neo::Config[:assets].nil?
         asset_arr = Neo::Config[:assets].find{|asset| asset[:action]==full_action_path }
         unless asset_arr.nil?
@@ -103,7 +103,7 @@ class Neo::Asset::Manager
         # find the last modified time from files
         mtime = all_asset_files.reduce(0) { |max_time, path| [File.mtime(path).to_i, max_time].max }.to_i.to_s(32)
 
-        @media_dir += '/' + Neo::Params.module + '/' + @last_version
+        @media_dir += '/' + Neo::Params.module.underscore + '/' + @last_version
 
         if mtime != @last_version or not File.directory?(@media_dir)
           if @last_version.blank?

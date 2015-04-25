@@ -28,6 +28,8 @@ class Neo::Commands::DumpAssets < Neo::Command
 
   def process_asset(asset)
     Neo::Params.module, Neo::Params.controller, Neo::Params.action = asset[:action].split ':'
+    Neo::Params.module = Neo::Params.module.camelize
+    Neo::Params.controller = Neo::Params.controller.camelize
     Neo::Asset::Manager.init
 
     links = Neo::Asset::Manager.get_dev_links.map{|i| Neo::Asset::Manager.media_dir + i}
