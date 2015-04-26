@@ -20,8 +20,8 @@ module Neo
   end
 
   def http_response
-	  routes = Neo::Router::ConfigurationParser.new.generate_routes
-    routes += Neo::Router::AutoRouteGenerator.new.generate_routes
+	  @config_routes = Neo::Router::ConfigurationParser.new.generate_routes
+    routes = @config_routes + Neo::Router::AutoRouteGenerator.new.generate_routes
     router = Neo::Router.new request: @req, routes: routes
 	  router.get_http_response
   end
@@ -42,9 +42,14 @@ module Neo
   end
 
   def generate_url(name, parameters=[])
-		options = Neo::Config[:routes][name]
-	  config = Neo::Router::Configuration.new(name: name, options: options)
-		config.get_url(parameters)
+    route = @config_routes.find do |route|
+      route.match_for_path_generate? name, parameters
+    end
+		if route
+      route.generate_path parameters
+    else
+      Neo::Exceptions::SystemError("Cannot generate route with this name: #{name}")
+    end
   end
 
   def log(message, newline=false)

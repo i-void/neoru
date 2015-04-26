@@ -30,41 +30,39 @@ class Neo::Fixture
       value.each do |props|
         obj = model_obj.new
         data_name, params = props
-        params.each do |key,param|
-          yield model, data_name, param, key, obj
-        end
+        yield model, obj, data_name, params
       end
     end
   end
 
-  def relations
-
-  end
-
   def load
     @paths.each {|path| parse_data path}
-    models do |model, data_name, param, key, obj|
-      if not param.is_a? Array and not param.start_with? '+'
-        obj.instance_variable_set('@'+key,param)
-        if @sort_cols.has_key? model and @sort_cols[model] == key
-          SortCol.new(obj,key).set_sort_point_for param
+    models do |model, obj, data_name, params|
+      params.each do |key, param|
+        if not param.is_a? Array and not param.to_s.start_with? '+'
+          obj.instance_variable_set('@'+key,param)
+          if @sort_cols.has_key? model and @sort_cols[model] == key
+            SortCol.new(obj,key).set_sort_point_for param
+          end
         end
       end
       obj.save
       @saved[data_name] = obj
     end
-    models do |model, data_name, param, key, obj|
-      if not param.is_a? Array and param.start_with? '+'
-        @saved[data_name].relate_to @saved[param.gsub(/^\+/,'')], "Has#{key.camelize}"
-      elsif param.is_a? Array
-        if param.all? {|p| p.start_with? '+'}
-          param.each do |p|
-            @saved[data_name].relate_to @saved[p.gsub(/^\+/,'')], "Has#{key.camelize}"
+    models do |model, obj, data_name, params|
+      params.each do |key, param|
+        if not param.is_a? Array and param.to_s.start_with? '+'
+          @saved[data_name].relate_to @saved[param.gsub(/^\+/,'')], "Has#{key.camelize}"
+        elsif param.is_a? Array
+          if param.all? {|p| p.to_s.start_with? '+'}
+            param.each do |p|
+              @saved[data_name].relate_to @saved[p.gsub(/^\+/,'')], "Has#{key.camelize}"
+            end
+          else
+            Neo::Exceptions::SystemError.new(
+              "All parameters must include relations in #{model}:#{data_name}:#{key}"
+            ).raise
           end
-        else
-          Neo::Exceptions::SystemError.new(
-            "All parameters must include relations in #{model}:#{data_name}:#{key}"
-          ).raise
         end
       end
     end

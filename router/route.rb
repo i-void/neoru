@@ -30,6 +30,23 @@ class Neo::Router::Route
 		action_valid?
 	end
 
+	# detect that is this route matches with url generation with name
+	#   and parameters
+	def match_for_path_generate?(name, parameters)
+		if @name == name
+      if "/#{parameters.join('/')}".match /^#{@parameters_url}/
+        true
+      else
+        Neo::Exceptions::SystemError.new("Cannot generate path with this parameters: #{parameters}").raise
+      end
+    end
+	end
+
+  def generate_path(parameters)
+    param_string = (parameters.length > 0) ? "/#{parameters.join('/')}" : ''
+    "#{@path}#{param_string}"
+  end
+
 	def execute_action
 		@action.execute with_parameters: @parameters
 	end
