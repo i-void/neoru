@@ -7,9 +7,10 @@ class Neo::Asset::Parsers::Opal
 
 	def self.new_environment(asset_folder)
 		@asset_folder = asset_folder
-		@env = Opal::Environment.new
-		@env.append_path(asset_folder)
-		#@env.use_gem 'opal-jquery'
+    Opal.use_gem('opal')
+    Opal.use_gem('opal-jquery')
+		Opal.append_path(asset_folder)
+
 	end
 
 	# Takes a file and parse it with Opal parser
@@ -19,7 +20,7 @@ class Neo::Asset::Parsers::Opal
 	#   * :extension => converting type of the file
 	def self.parse(file)
 		#file = File.realdirpath(file).gsub /^#{@asset_folder}\//, ''
-		content = @env[file].to_s
+		content = Opal::Builder.build(file).to_s
 		{content: content, extension: '.js'}
 	end
 
